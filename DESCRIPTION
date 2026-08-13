@@ -1,7 +1,7 @@
 Package: starlightdown
 Type: Package
 Title: Documentation Websites for R Packages with Astro Starlight
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R:
     person("Bradley R.", "Buchsbaum",
            email = "brad.buchsbaum@gmail.com",
@@ -39,5 +39,6 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://github.com/bbuchsbaum/starlightdown
+URL: https://bbuchsbaum.github.io/starlightdown/,
+    https://github.com/bbuchsbaum/starlightdown
 BugReports: https://github.com/bbuchsbaum/starlightdown/issues

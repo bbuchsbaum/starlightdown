@@ -26,6 +26,7 @@ plugin.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://bbuchsbaum.github.io/starlightdown/}
   \item \url{https://github.com/bbuchsbaum/starlightdown}
   \item Report bugs at \url{https://github.com/bbuchsbaum/starlightdown/issues}
 }
