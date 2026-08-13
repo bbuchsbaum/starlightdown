@@ -4,96 +4,72 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`starlightdown` is an R package that generates documentation websites for R packages using Astro Starlight. It combines:
-- `{altdoc}` for rendering package docs (README, NEWS, vignettes, man pages) to Markdown
-- `{pkgdown}` (optional) for navigation structure via `_pkgdown.yml`
-- Astro Starlight for the final rendered site
+`starlightdown` is a documentation compiler for R packages targeting Astro Starlight. It reads the package the way pkgdown does, renders it to Markdown, and hands a typed manifest to a bundled Starlight plugin that does the presentation.
 
-## Build & Development Commands
+It does **not** wrap altdoc, and it is **not** a pkgdown fork. `_pkgdown.yml` stays canonical: the same `url:`, `reference:`, `articles:` and `redirects:` keys drive the new site, and nothing is ever rewritten.
+
+## Commands
 
 ```r
-# Install dependencies
-install.packages(c("altdoc", "desc", "fs", "cli"))
-
-# Run tests
-devtools::test()
-
-# Run a single test file
-testthat::test_file("tests/testthat/test-example.R")
-
-# Check package
+devtools::test()                                   # full suite
+testthat::test_file("tests/testthat/test-sync.R")  # one file
 devtools::check()
-
-# Document (regenerate NAMESPACE and Rd files)
 devtools::document()
 ```
 
-## Usage Workflow
-
-```r
-# 1. Scaffold Starlight site (one-time)
-starlightdown::use_starlight_site()
-
-# 2. Build/sync docs (repeatable)
-starlightdown::build_site()
-
-# 3. Preview (requires npm install in starlight/)
-starlightdown::preview_site()
-```
-
-### Migrating from pkgdown
-
-```r
-# 1. Scaffold Starlight site
-starlightdown::use_starlight_site()
-
-# 2. Migrate pkgdown configuration (reads _pkgdown.yml)
-starlightdown::migrate_from_pkgdown()
-
-# 3. Build as usual
-starlightdown::build_site()
-```
-
-The migration function:
-- Converts article/reference sections to Starlight sidebar
-- Migrates homepage title/description
-- Generates URL redirects from old `.html` URLs
-- Reports items needing manual attention (navbar dropdowns, custom CSS, analytics)
-
-For the Starlight site:
 ```bash
-cd starlight/
-npm install
-npm run dev    # development server
-npm run build  # production build
+cd starlight && npm ci && npm run build   # the Astro side
 ```
 
 ## Architecture
 
-### Data Flow
-1. `build_site()` calls `altdoc::render_docs()` to populate `docs/`
-2. `sync_docs_to_starlight()` copies Markdown to `starlight/src/content/docs/` with mapping:
-   - `README.md` → `index.md`
-   - `vignettes/*` → `articles/*`
-   - `man/*` → `reference/*`
-3. `add_frontmatter_to_tree()` ensures Starlight-required frontmatter (`title:`) on every page
-4. Optional: `generate_pkgdown_sidebar()` creates sidebar from `_pkgdown.yml` metadata
+Pipeline, in `build_site()`: **model → render → manifest → validate → commit**.
 
-### Key Files
-- `R/build_site.R` - Main orchestration, `build_with_altdoc()` helper
-- `R/helpers.R` - `sync_docs_to_starlight()`, `ensure_frontmatter()`, `generate_pkgdown_sidebar()`, `set_theme_css()`, MDX conversion functions
-- `R/migrate_pkgdown.R` - `migrate_from_pkgdown()` for pkgdown-to-starlightdown migration
-- `R/use_starlight_site.R` - Scaffolds `starlight/` from template
-- `inst/starlight-template/` - Astro Starlight project template with placeholders (`PKG_TITLE`, `PKG_SLUG`)
+1. `sd_pkg()` wraps `pkgdown::as_pkgdown()` into the package model (topics, meta, vignettes, site URL, base). Synthesizes a default model when there is no `_pkgdown.yml`.
+2. Reference pages come from a walker over `tools::parse_Rd`. Examples execute against the *installed* namespace with figures captured.
+3. Articles are executed by the Quarto CLI to GFM; the `<name>_files/` directory is harvested alongside the Markdown.
+4. README/NEWS/CITATION get adapters.
+5. Everything is written to a staging directory, validated, then swapped into place atomically.
+
+### The contract with the frontend
+
+`inst/starlight-plugin/CONTRACT.md` is authoritative — read it before changing anything that crosses the boundary. Load-bearing invariants:
+
+- **R emits no JavaScript and no MDX.** Structured data travels as `sd:` YAML frontmatter and `site.json`. This is deliberate: generating JS/JSX from R by string manipulation is what sank the previous implementation.
+- `site.url` is **origin only**; `base` is separate. Putting a path in `url` double-counts the base in the sitemap.
+- **Prose links carry the base; `site.json` routes, index slugs, and images do not.** `sd_apply_base_to_links()` is the single place the base is applied.
+- Reference bodies contain **no H1** — the title comes from frontmatter and Starlight renders it.
+- Every reference-index group needs a `title`, and every `lifecycle` value must be one of the schema's four. Both are validated in R because a violation surfaces only as a failed Astro build.
+- Redirect stubs are static meta-refresh pages in `public/` (GitHub Pages ignores a Netlify `_redirects` file), and must skip any source colliding with a generated route.
+
+### Key files
+
+| Path | Role |
+| --- | --- |
+| `R/build_site.R` | pipeline orchestration |
+| `R/package-model.R`, `R/topics-select.R` | pkgdown model, `contents:` selector resolution |
+| `R/rd-parse.R`, `R/rd-render.R`, `R/rd-examples.R`, `R/links.R` | Rd → Markdown |
+| `R/build-articles.R`, `R/quarto.R` | Quarto pipeline |
+| `R/markdown-scan.R` | **fence-aware scanner** — every markdown regex must go through it |
+| `R/manifest.R`, `R/sidebar.R`, `R/redirects.R` | `site.json` and what derives from it |
+| `R/sync.R`, `R/validate.R` | staging, validation gates, atomic commit |
+| `R/machine-dir.R`, `R/theme.R` | `.starlightdown/` generation, theme presets |
+| `inst/starlight-plugin/` | the npm package vendored into each site |
+| `inst/starlight-template/` | the scaffold (user-owned after copying) |
+
+### Ownership inside a generated site
+
+`starlight/.starlightdown/` is machine-owned and regenerated every build. Everything else — `astro.config.mjs`, `src/styles/custom.css`, `package.json` — belongs to the user. Edit `package.json` structurally via jsonlite, never as text.
 
 ### Themes
-Two CSS themes available: `bauhaus` (default) and `ion`. Theme CSS files live in:
-- `inst/starlight-template/src/styles/` (bauhaus, nova base)
-- `inst/themes/ion/` (ion theme)
 
-## Important Patterns
+One bundled default (editorial/scientific: IBM Plex, paper-and-ink palette, fused code/output cells) plus `nova` via the maintained `starlight-theme-nova` plugin. `ion` is deliberately unavailable: `starlight-ion-theme` peers on Astro 6 / Starlight 0.38 and cannot run this stack.
 
-- The `altdoc/` and `pkgdown/` directories in the repo root are reference clones, not part of the package (ignored via `.gitignore`)
-- `build_site()` detects if `altdoc/` is a settings folder vs a clone and stages builds in temp dir if needed
-- All synced Markdown files get frontmatter injected automatically; first H1 becomes the title
-- Sidebar defaults to Starlight autogenerate by directory; pkgdown-driven sidebar is opt-in via `use_pkgdown_nav = TRUE`
+Versions are pinned exactly — **Starlight 0.41.7 requires Astro 7**, not 5. The template ships `package-lock.json` because CI runs `npm ci`.
+
+## Gotchas
+
+- Set `STARLIGHTDOWN_CACHE_DIR` in anything that builds articles, or test runs pollute the real user cache.
+- Iterating on plugin source needs `astro build --force`; Astro's content layer otherwise serves stale HTML.
+- `R CMD build` copies the whole tree before `.Rbuildignore` applies, so a large `starlight/node_modules` slows every check.
+- Fixtures live in `tests/testthat/fixtures/`: `testpkg.minimal` (no `_pkgdown.yml`) and `testpkg.full` (selectors, unicode and apostrophes in titles, `\tabular`/`\eqn`/`\Sexpr`, macros, vignettes, NEWS, CITATION). `testpkg.full` is installed into a temp library because examples need the namespace.
