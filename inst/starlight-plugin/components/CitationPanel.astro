@@ -1,0 +1,31 @@
+---
+/**
+ * How to cite the package.
+ *
+ * The formatted reference is always visible; BibTeX is folded away behind a
+ * `<details>` because most readers want the sentence, not the record. The copy
+ * button comes from Expressive Code, so there is no bespoke clipboard script.
+ */
+import site from 'virtual:starlightdown/site';
+import { Code } from '@astrojs/starlight/components';
+
+const citation = site.citation;
+const bibtex = citation?.bibtex?.trim();
+---
+
+{
+	citation?.text && (
+		<section class="sd-citation not-content">
+			<h2 class="sd-section-heading" id="citation">
+				Citation
+			</h2>
+			<p class="sd-citation-text">{citation.text}</p>
+			{bibtex && (
+				<details class="sd-bibtex">
+					<summary>BibTeX</summary>
+					<Code lang="bibtex" code={bibtex} />
+				</details>
+			)}
+		</section>
+	)
+}

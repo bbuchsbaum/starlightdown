@@ -1,0 +1,28 @@
+---
+import { LIFECYCLE_LABELS, LIFECYCLE_DESCRIPTIONS } from './utils.mjs';
+
+interface Props {
+	lifecycle?: string;
+	/** `dot` is the compact form used in the reference index. */
+	variant?: 'badge' | 'dot';
+}
+
+const { lifecycle, variant = 'badge' } = Astro.props;
+const label = lifecycle ? LIFECYCLE_LABELS[lifecycle] : undefined;
+const description = lifecycle ? LIFECYCLE_DESCRIPTIONS[lifecycle] : undefined;
+---
+
+{
+	label &&
+		(variant === 'dot' ? (
+			<span class={`sd-lifecycle-dot sd-lifecycle-${lifecycle}`} title={description}>
+				<span class="sd-dot" aria-hidden="true" />
+				<span class="sr-only">{label}</span>
+			</span>
+		) : (
+			<span class={`sd-lifecycle sd-lifecycle-${lifecycle}`} title={description}>
+				<span class="sd-dot" aria-hidden="true" />
+				{label}
+			</span>
+		))
+}

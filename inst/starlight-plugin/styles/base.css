@@ -1,0 +1,193 @@
+/*
+ * Editorial Scientific — typography and page rhythm.
+ *
+ * Prose is IBM Plex Serif at 17px/1.68 in a 46rem measure (~72 characters).
+ * Interface chrome stays in Plex Sans at Starlight's smaller sizes, so the
+ * reading column is always the largest text on the page.
+ *
+ * Type scale: a minor third (1.2) from 17px for h2–h4, with h1 lifted above the
+ * ladder so a page title still reads as a title. Section headings are set by a
+ * hairline rule above them rather than by size alone.
+ */
+
+:root {
+	--sl-content-width: 46rem;
+	--sl-line-height: 1.68;
+	--sl-line-height-headings: 1.25;
+	--sl-content-gap-y: 1.15rem;
+
+	--sl-text-body: 1.0625rem; /* 17px */
+	--sl-text-h1: 2.05rem; /* 33px */
+	--sl-text-h2: 1.5rem; /* 24px */
+	--sl-text-h3: 1.25rem; /* 20px */
+	--sl-text-h4: 1.0625rem; /* 17px */
+	--sl-text-h5: 0.9375rem; /* 15px */
+
+	--sd-measure-pad: 1.5rem;
+}
+
+/* ---------- Prose ---------- */
+
+.sl-markdown-content {
+	font-family: var(--sd-font-serif);
+	font-size: var(--sl-text-body);
+	line-height: var(--sl-line-height);
+	text-rendering: optimizeLegibility;
+	font-variant-numeric: oldstyle-nums proportional-nums;
+}
+
+/* Figures, numbers in tables and code all want lining figures back. */
+.sl-markdown-content :is(table, code, pre, .sd-index-name, time) {
+	font-variant-numeric: normal;
+}
+
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+	font-family: var(--sd-font-serif);
+	font-weight: 600;
+	letter-spacing: -0.006em;
+	text-wrap: balance;
+}
+
+/*
+ * Section rule: an h2 opens a new section of the document, so it gets a
+ * hairline above it the way a printed methods section does. The first h2 on a
+ * page has nothing to separate it from, so it keeps the rule but loses the gap.
+ */
+.sl-markdown-content h2 {
+	border-top: 1px solid var(--sd-hairline);
+	padding-top: 1.15rem;
+	margin-top: 2.4rem;
+}
+
+.sl-markdown-content h3 {
+	margin-top: 2rem;
+}
+
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+	font-family: var(--sd-font-sans);
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+}
+
+/* ---------- Links ---------- */
+
+.sl-markdown-content a {
+	color: var(--sd-accent);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.18em;
+	text-decoration-color: color-mix(in srgb, var(--sd-accent) 35%, transparent);
+	transition: text-decoration-color 0.12s ease;
+}
+
+.sl-markdown-content a:hover {
+	color: var(--sd-accent);
+	text-decoration-color: var(--sd-accent);
+}
+
+/* Headings that are links (anchor headings) should not be underlined. */
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) a {
+	text-decoration: none;
+	color: inherit;
+}
+
+/* ---------- Inline code ---------- */
+
+.sl-markdown-content code {
+	font-family: var(--sd-font-mono);
+	font-size: 0.86em;
+	border-radius: 2px;
+	background-color: var(--sl-color-bg-inline-code);
+}
+
+/* ---------- Blockquotes and rules ---------- */
+
+.sl-markdown-content blockquote {
+	border-inline-start: 2px solid var(--sd-hairline-strong);
+	color: var(--sd-ink-muted);
+	font-style: italic;
+	padding-inline-start: 1.15rem;
+}
+
+.sl-markdown-content hr {
+	border-bottom: 1px solid var(--sd-hairline);
+	margin-block: 2rem;
+}
+
+/* ---------- Figures ---------- */
+
+.sl-markdown-content :is(p, figure) > img,
+.sl-markdown-content p > a > img {
+	margin-inline: auto;
+	border: 1px solid var(--sd-hairline);
+	border-radius: 2px;
+	background: var(--sd-figure-plate);
+}
+
+.sl-markdown-content figcaption {
+	font-family: var(--sd-font-sans);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: var(--sd-ink-muted);
+	text-align: center;
+	margin-top: 0.6rem;
+}
+
+/* ---------- Interface chrome ---------- */
+
+.sidebar-content,
+.right-sidebar,
+header.header,
+.sl-flex.print\:hidden {
+	font-family: var(--sd-font-sans);
+}
+
+/* A single hairline instead of Starlight's shadow under the top bar. */
+header.header {
+	border-bottom: 1px solid var(--sd-hairline);
+}
+
+/* The active sidebar item is the only navigation element that takes colour. */
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover {
+	color: var(--sd-accent);
+	background-color: transparent;
+	font-weight: 600;
+	box-shadow: inset 2px 0 0 var(--sd-accent);
+}
+
+/* ---------- Focus ---------- */
+
+:where(a, button, summary, input, select, textarea, [tabindex], [role='tab']):focus-visible {
+	outline: 2px solid var(--sd-accent);
+	outline-offset: 2px;
+	border-radius: 1px;
+}
+
+/*
+ * Expressive Code's copy button and Starlight's tab strip clip their own
+ * overflow, so an outside ring would be cut off. Draw it inside instead.
+ */
+:where(.expressive-code .copy button, [role='tab']):focus-visible {
+	outline-offset: var(--sl-outline-offset-inside, -0.1875rem);
+}
+
+/* ---------- Motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.sl-markdown-content a,
+	.sl-markdown-content tbody tr {
+		transition: none;
+	}
+}
+
+/* ---------- Print ---------- */
+
+@media print {
+	.sl-markdown-content a {
+		text-decoration-color: currentColor;
+	}
+}

@@ -1,0 +1,59 @@
+---
+import site from 'virtual:starlightdown/site';
+
+const pkg = site.package ?? {};
+const urls = pkg.urls ?? {};
+const maintainer = pkg.maintainer ?? null;
+
+const links = [
+	['Source', urls.repo],
+	['Report a bug', urls.bugs],
+	['CRAN', urls.cran],
+	['R-universe', urls.runiverse],
+].filter(([, href]) => Boolean(href));
+
+const hasContent = pkg.version || pkg.license || maintainer || links.length > 0;
+---
+
+{
+	hasContent && (
+		<div class="sd-meta-card">
+			<h2 class="sd-meta-heading">{pkg.name || 'Package'}</h2>
+			<dl class="sd-meta-list">
+				{pkg.version && (
+					<>
+						<dt>Version</dt>
+						<dd class="sd-meta-mono">{pkg.version}</dd>
+					</>
+				)}
+				{pkg.license && (
+					<>
+						<dt>License</dt>
+						<dd>{pkg.license}</dd>
+					</>
+				)}
+				{maintainer?.name && (
+					<>
+						<dt>Maintainer</dt>
+						<dd>
+							{maintainer.email ? (
+								<a href={`mailto:${maintainer.email}`}>{maintainer.name}</a>
+							) : (
+								maintainer.name
+							)}
+						</dd>
+					</>
+				)}
+			</dl>
+			{links.length > 0 && (
+				<ul class="sd-meta-links">
+					{links.map(([label, href]) => (
+						<li>
+							<a href={href}>{label}</a>
+						</li>
+					))}
+				</ul>
+			)}
+		</div>
+	)
+}

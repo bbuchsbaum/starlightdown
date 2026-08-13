@@ -1,0 +1,93 @@
+---
+/**
+ * The package homepage masthead.
+ *
+ * Starlight only reaches this component when `entry.data.hero` is set; the
+ * route middleware sets it for `sd.kind === 'home'`, so R does not have to emit
+ * a `hero:` block and the frontmatter contract is unchanged.
+ *
+ * Deliberately not Starlight's marketing hero: no image column, no gradient, no
+ * call-to-action buttons. A package homepage answers three questions in order —
+ * what is this, how do I install it, what do I type first — so it is set as a
+ * masthead: name, tagline, provenance, install, quick start.
+ */
+import site from 'virtual:starlightdown/site';
+import InnerHero from 'virtual:starlightdown/inner/Hero';
+import { Code } from '@astrojs/starlight/components';
+import InstallTabs from '../InstallTabs.astro';
+
+// Starlight's PAGE_TITLE_ID. Not exported from the package, so it is inlined
+// here; the skip link and the table of contents both target it.
+const PAGE_TITLE_ID = '_top';
+
+const { kind } = Astro.locals.starlightdown ?? { kind: 'article' };
+const isHome = kind === 'home';
+
+const pkg = site.package ?? {};
+const urls = pkg.urls ?? {};
+const name = pkg.name || Astro.locals.starlightRoute.entry.data.title;
+const tagline = pkg.title;
+const quickstart = site.quickstart?.trim();
+
+const facts = [
+	pkg.version && { label: 'version', text: pkg.version, mono: true },
+	pkg.license && { label: 'license', text: pkg.license, mono: false },
+].filter(Boolean);
+
+const links = [
+	['Source', urls.repo],
+	['CRAN', urls.cran],
+	['R-universe', urls.runiverse],
+	['Issues', urls.bugs],
+].filter(([, href]) => Boolean(href));
+---
+
+{
+	isHome ? (
+		<div class="sd-hero">
+			<h1 id={PAGE_TITLE_ID} data-page-title class="sd-hero-name">
+				{name}
+			</h1>
+			{tagline && <p class="sd-hero-tagline">{tagline}</p>}
+
+			{(facts.length > 0 || links.length > 0) && (
+				<div class="sd-hero-meta">
+					{facts.length > 0 && (
+						<ul class="sd-fact-list">
+							{facts.map((fact: any) => (
+								<li class="sd-fact">
+									<span class="sd-fact-label">{fact.label}</span>
+									<span class:list={['sd-fact-value', { 'sd-fact-mono': fact.mono }]}>
+										{fact.text}
+									</span>
+								</li>
+							))}
+						</ul>
+					)}
+					{links.length > 0 && (
+						<ul class="sd-hero-links">
+							{links.map(([label, href]) => (
+								<li>
+									<a href={href}>{label}</a>
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+			)}
+
+			<InstallTabs />
+
+			{quickstart && (
+				<div class="sd-quickstart">
+					<h2 class="sd-section-heading" id="quick-start">
+						Quick start
+					</h2>
+					<Code lang="r" code={quickstart} />
+				</div>
+			)}
+		</div>
+	) : (
+		<InnerHero />
+	)
+}

@@ -1,0 +1,10 @@
+Package: testpkg.minimal
+Type: Package
+Title: A Minimal Test Package for 'starlightdown'
+Version: 0.1.0
+Authors@R:
+    person("Test", "Author", email = "test@example.com", role = c("aut", "cre"))
+Description: A minimal fixture package with no _pkgdown.yml, used to
+    exercise the default package model and scaffolding paths.
+License: MIT + file LICENSE
+Encoding: UTF-8

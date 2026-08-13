@@ -1,0 +1,23 @@
+/* Ion overrides for better proportions on pkgdown-style sites */
+
+/* Right sidebar (On this page) */
+#starlight__on-this-page {
+  font-size: var(--sl-text-base) !important;
+  font-weight: 700 !important;
+  opacity: 1;
+}
+
+.right-sidebar-panel :where(a) {
+  font-size: var(--sl-text-sm) !important;
+  line-height: 1.5;
+}
+
+/* Pagination buttons */
+.pagination-links .link-title {
+  font-size: var(--sl-text-lg) !important;
+  font-weight: 600;
+}
+
+.pagination-links a {
+  padding: 1rem !important;
+}

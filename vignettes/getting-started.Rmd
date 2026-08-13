@@ -1,0 +1,134 @@
+---
+title: "Getting started with starlightdown"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with starlightdown}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+starlightdown compiles an R package's documentation into an
+[Astro Starlight](https://starlight.astro.build/) site. It is a documentation
+*compiler*: it reads your package the way pkgdown does, renders it to Markdown,
+and hands a typed manifest to a bundled Starlight plugin that does the
+presentation.
+
+## What you need
+
+- **R**, obviously, and the package you are documenting **installed**. Examples
+  and vignettes are executed against the installed namespace, exactly as
+  `example()` and `R CMD check` do.
+- **Node.js** (18 or newer), for the Astro build.
+- **Quarto**, but only if your package has vignettes. A reference-only site
+  builds with no Quarto at all.
+
+## Two commands
+
+```{r}
+starlightdown::use_starlight_site() # once
+starlightdown::build_site()         # whenever the docs change
+```
+
+`use_starlight_site()` creates `starlight/`: an Astro project with the plugin
+vendored into `starlight/.starlightdown/plugin/`, pinned dependency versions,
+and `npm install` run for you if npm is on the path.
+
+`build_site()` does the compiling. Then:
+
+```sh
+cd starlight
+npm run dev    # preview at localhost:4321
+npm run build  # production build into starlight/dist
+```
+
+## What gets built
+
+| Source | Becomes |
+| --- | --- |
+| `man/*.Rd` | `/reference/<topic>/`, with executed examples and figures |
+| `_pkgdown.yml` `reference:` | the grouped function index at `/reference/` |
+| `vignettes/*.Rmd`, `*.qmd` | `/articles/<name>/`, executed by Quarto |
+| `README.md` | the home page |
+| `NEWS.md` | `/news/` |
+| `inst/CITATION` | the citation block on the home page |
+
+Old pkgdown URLs keep working: every `/reference/foo.html` gets a redirect page
+pointing at `/reference/foo/`.
+
+## `_pkgdown.yml` stays canonical
+
+If you already have a pkgdown site, there is nothing to convert. starlightdown
+reads the same file:
+
+- `url:` sets the site origin and the base path.
+- `reference:` sections, including `starts_with()` and friends, group the
+  function index and order the sidebar.
+- `articles:` sections order the article sidebar.
+- `redirects:` entries become redirect pages.
+
+`migrate_from_pkgdown()` does not rewrite anything. It scaffolds the site if
+needed and prints what carries over and what has no equivalent — custom navbar
+components, pkgdown themes, HTML includes:
+
+```{r}
+starlightdown::migrate_from_pkgdown()
+```
+
+You can keep both generators running side by side.
+
+## Options worth knowing
+
+```{r}
+starlightdown::build_site(
+  articles = FALSE,     # skip vignettes (and the Quarto requirement)
+  examples = FALSE,     # show example code without running it
+  run_dont_run = TRUE,  # execute \dontrun{} blocks too
+  lazy = FALSE,         # ignore Quarto's freeze cache and re-execute
+  theme = "nova"        # "default" (bundled) or "nova"
+)
+```
+
+starlightdown-specific settings live under a `starlightdown:` key in
+`_pkgdown.yml`, so there is still only one configuration file:
+
+```yaml
+url: https://you.github.io/yourpkg
+
+starlightdown:
+  theme: default
+  quickstart: |
+    library(yourpkg)
+    do_the_thing()
+```
+
+## How a build behaves
+
+The whole content tree is written to a staging directory, validated, and only
+then swapped into place. Two things follow from that, and both are deliberate:
+
+- A build that fails validation leaves the published site untouched. You never
+  ship a half-written tree.
+- A page whose source you deleted cannot survive as a stale file, because the
+  directory is replaced rather than written over.
+
+The validation gates are the ones that catch real breakage: every page's
+frontmatter parses and has a title, every relative image exists next to the
+page that names it, every site-absolute link matches a route or a redirect, and
+routes and files are the same set.
+
+Builds are deterministic. Building twice without changing anything produces
+byte-identical output, which makes the generated site reviewable in a diff.
+
+## Editing the result
+
+Everything under `starlight/.starlightdown/` is machine-owned and rewritten on
+every build. Everything else is yours:
+
+- `starlight/astro.config.mjs` — add Astro integrations here.
+- `starlight/src/styles/custom.css` — loaded after the theme, so your rules win.
+- `starlight/package.json` — starlightdown edits dependencies through
+  `jsonlite`, never by rewriting text.

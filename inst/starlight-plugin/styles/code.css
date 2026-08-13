@@ -1,0 +1,111 @@
+/*
+ * Editorial Scientific — code cells.
+ *
+ * The signature element. R's example runner emits a ```r block followed
+ * immediately by ```r-output / r-message / r-warning / r-error blocks. Visually
+ * those belong to one cell, so the source block loses its bottom edge and the
+ * output blocks fuse onto it, tinted and unhighlighted. Diagnostics carry a 3px
+ * left rule — slate for messages, ochre for warnings, madder for errors — so
+ * they are distinguishable without relying on colour alone.
+ *
+ * `.expressive-code` is the outer wrapper Expressive Code emits per block;
+ * `.sd-output-block` is added to it by ec/output-frames.mjs.
+ */
+
+.sl-markdown-content .expressive-code {
+	--sd-cell-radius: 2px;
+}
+
+.sl-markdown-content .expressive-code pre {
+	font-family: var(--sd-font-mono);
+	font-variant-ligatures: none;
+}
+
+/* ---------- Fusing source onto its output ---------- */
+
+/* The source block of a fused pair keeps its top corners, loses its bottom. */
+.sl-markdown-content .expressive-code:has(+ .expressive-code.sd-output-block) .frame pre {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom-width: 0;
+}
+
+.sl-markdown-content .expressive-code:has(+ .expressive-code.sd-output-block) .frame.has-title,
+.sl-markdown-content .expressive-code:has(+ .expressive-code.sd-output-block) .frame.is-terminal {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+/* Output blocks butt directly against whatever precedes them. */
+.sl-markdown-content .expressive-code.sd-output-block {
+	margin-top: 0;
+}
+
+.sl-markdown-content .expressive-code.sd-output-block .frame pre {
+	background: var(--sd-output-bg);
+	border-color: var(--sd-code-border);
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	color: var(--sd-output-ink);
+}
+
+/* Consecutive output blocks (output then a warning) share their edges too. */
+.sl-markdown-content .expressive-code.sd-output-block:has(+ .expressive-code.sd-output-block) .frame pre {
+	border-bottom-width: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+/* Output is not source: mute it, and keep it out of the way of the eye. */
+.sl-markdown-content .expressive-code.sd-output-block .frame pre code,
+.sl-markdown-content .expressive-code.sd-output-block .frame pre code * {
+	color: var(--sd-output-ink) !important;
+	font-style: normal;
+	font-weight: 400;
+}
+
+/* Nothing to copy from a transcript. */
+.sl-markdown-content .expressive-code.sd-output-block .copy {
+	display: none;
+}
+
+/* ---------- Diagnostics ---------- */
+
+.sl-markdown-content .expressive-code.sd-output-message .frame pre {
+	border-inline-start: 3px solid var(--sd-rule-message);
+}
+
+.sl-markdown-content .expressive-code.sd-output-warning .frame pre {
+	border-inline-start: 3px solid var(--sd-rule-warning);
+}
+
+.sl-markdown-content .expressive-code.sd-output-error .frame pre {
+	border-inline-start: 3px solid var(--sd-rule-error);
+}
+
+.sl-markdown-content
+	:is(.sd-output-warning, .sd-output-error)
+	.frame
+	pre
+	code {
+	color: var(--sd-ink) !important;
+}
+
+/* ---------- Usage synopsis ---------- */
+
+/*
+ * The usage block sits directly under the function name and reads as part of
+ * the heading, not as a sample to copy.
+ */
+.sd-usage .expressive-code .frame pre {
+	background: transparent;
+	border-inline: 0;
+	border-block: 1px solid var(--sd-hairline);
+	border-radius: 0;
+	padding-inline: 0;
+	font-size: 0.875rem;
+}
+
+.sd-usage .expressive-code .copy {
+	display: none;
+}

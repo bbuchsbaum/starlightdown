@@ -1,0 +1,24 @@
+/*
+ * Editorial Scientific — typefaces.
+ *
+ * The @fontsource packages are imported separately (see `customCss` in
+ * index.mjs) so that only the latin subsets we actually use are shipped. This
+ * file just names the stacks and hands the UI ones to Starlight.
+ *
+ * Serif sets prose, Sans sets interface chrome, Mono sets code and — the one
+ * deliberate crossover — function names on reference pages.
+ */
+
+:root {
+	--sd-font-serif: 'IBM Plex Serif', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+	--sd-font-sans:
+		'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+		Arial, sans-serif;
+	--sd-font-mono:
+		'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+		monospace;
+
+	/* Starlight composes these into --__sl-font / --__sl-font-mono. */
+	--sl-font: var(--sd-font-sans);
+	--sl-font-mono: var(--sd-font-mono);
+}

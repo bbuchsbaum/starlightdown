@@ -1,0 +1,21 @@
+---
+/**
+ * Starlight's table of contents, with the package's metadata card beneath it.
+ * The card is desktop-only: on mobile the right sidebar collapses to a TOC
+ * dropdown, and appending a card to that would bury the page content.
+ */
+import InnerPageSidebar from 'virtual:starlightdown/inner/PageSidebar';
+import MetaCard from '../MetaCard.astro';
+
+const showCard = Boolean(Astro.locals.starlightRoute.toc);
+---
+
+<InnerPageSidebar />
+
+{
+	showCard && (
+		<div class="sd-meta-panel sl-hidden lg:sl-block">
+			<MetaCard />
+		</div>
+	)
+}

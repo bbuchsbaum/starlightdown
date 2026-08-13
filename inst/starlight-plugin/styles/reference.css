@@ -1,0 +1,403 @@
+/*
+ * Editorial Scientific — reference pages.
+ *
+ * A function page is an entry in a manual: the name is set in mono as a
+ * specimen, the usage synopsis sits directly beneath it, and everything else is
+ * ordinary prose. Argument tables collapse to a definition list on narrow
+ * screens, because a two-column table at 360px is unreadable.
+ */
+
+/* ---------- Header ---------- */
+
+.sd-ref-header {
+	margin-top: 1rem;
+}
+
+.sd-ref-title {
+	font-family: var(--sd-font-mono);
+	font-size: 1.75rem;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.015em;
+	color: var(--sl-color-white);
+	overflow-wrap: anywhere;
+}
+
+.sd-ref-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1rem;
+	margin-top: 0.7rem;
+	font-family: var(--sd-font-sans);
+	font-size: 0.8125rem;
+	color: var(--sd-ink-muted);
+}
+
+.sd-since-version {
+	font-family: var(--sd-font-mono);
+	color: var(--sd-ink);
+}
+
+.sd-source-link {
+	font-family: var(--sd-font-mono);
+	color: var(--sd-ink-muted);
+	text-decoration: underline;
+	text-decoration-color: var(--sd-hairline-strong);
+	text-underline-offset: 0.18em;
+}
+
+.sd-source-link:hover {
+	color: var(--sd-accent);
+	text-decoration-color: var(--sd-accent);
+}
+
+/* ---------- Alias chips ---------- */
+
+.sd-aliases {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.4rem 0.55rem;
+	margin-top: 0.75rem;
+}
+
+.sd-aliases-label {
+	font-family: var(--sd-font-sans);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+}
+
+.sd-alias-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.sd-alias {
+	font-family: var(--sd-font-mono);
+	font-size: 0.75rem;
+	line-height: 1.4;
+	padding: 0.1rem 0.4rem;
+	border: 1px solid var(--sd-hairline);
+	border-radius: 2px;
+	color: var(--sd-ink-muted);
+	background: var(--sd-surface);
+}
+
+/* ---------- Lifecycle ---------- */
+
+.sd-lifecycle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-family: var(--sd-font-sans);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	padding: 0.1rem 0.45rem 0.1rem 0.35rem;
+	border: 1px solid currentColor;
+	border-radius: 2px;
+}
+
+.sd-lifecycle .sd-dot,
+.sd-lifecycle-dot .sd-dot {
+	width: 0.4rem;
+	height: 0.4rem;
+	border-radius: 50%;
+	background: currentColor;
+	flex: none;
+}
+
+/* Shape as well as colour, so the state survives a monochrome print. */
+.sd-lifecycle-experimental .sd-dot {
+	border-radius: 0;
+	transform: rotate(45deg);
+}
+
+.sd-lifecycle-deprecated .sd-dot,
+.sd-lifecycle-superseded .sd-dot {
+	background: transparent;
+	border: 1.5px solid currentColor;
+}
+
+.sd-lifecycle-experimental {
+	color: var(--sd-rule-warning);
+}
+
+.sd-lifecycle-stable {
+	color: var(--sd-ink-muted);
+}
+
+.sd-lifecycle-deprecated {
+	color: var(--sd-rule-error);
+}
+
+.sd-lifecycle-superseded {
+	color: var(--sd-rule-message);
+}
+
+.sd-lifecycle-dot {
+	display: inline-flex;
+	align-items: center;
+	margin-inline-start: 0.4rem;
+	vertical-align: middle;
+}
+
+/* ---------- Usage ---------- */
+
+.sd-usage {
+	margin-top: 1.25rem;
+}
+
+/* ---------- Argument tables ---------- */
+
+.sd-kind-reference .sl-markdown-content td:first-child {
+	font-family: var(--sd-font-mono);
+	font-size: 0.8125rem;
+	color: var(--sd-ink);
+	white-space: nowrap;
+	padding-inline-end: 1.25rem;
+	vertical-align: baseline;
+}
+
+@media (max-width: 40rem) {
+	.sd-kind-reference .sl-markdown-content table {
+		display: block;
+	}
+
+	.sd-kind-reference .sl-markdown-content thead {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+	}
+
+	.sd-kind-reference .sl-markdown-content tbody,
+	.sd-kind-reference .sl-markdown-content tr {
+		display: block;
+	}
+
+	.sd-kind-reference .sl-markdown-content tr {
+		border-bottom: 1px solid var(--sd-hairline);
+		padding-block: 0.65rem;
+	}
+
+	.sd-kind-reference .sl-markdown-content tr:last-child {
+		border-bottom: 0;
+	}
+
+	.sd-kind-reference .sl-markdown-content td {
+		display: block;
+		border: 0;
+		padding: 0;
+		white-space: normal;
+	}
+
+	.sd-kind-reference .sl-markdown-content td:first-child {
+		font-weight: 600;
+		white-space: normal;
+		margin-bottom: 0.2rem;
+	}
+
+	.sd-kind-reference .sl-markdown-content td + td {
+		padding-inline-start: 1rem;
+	}
+}
+
+/* ---------- Figures in dark mode ---------- */
+
+/*
+ * Raster plots from R are drawn on white. On a dark page they either glare or
+ * vanish, so they get a paper-coloured backing plate. A figure that is already
+ * dark-aware opts out with `.sd-dark-ok`.
+ */
+:root:not([data-theme='light']) .sl-markdown-content img {
+	background: var(--sd-figure-plate);
+	padding: 0.5rem;
+}
+
+:root:not([data-theme='light']) .sl-markdown-content img.sd-dark-ok,
+:root:not([data-theme='light']) .sl-markdown-content .sd-dark-ok img,
+.sl-markdown-content img[src$='.svg'] {
+	background: transparent;
+	padding: 0;
+}
+
+/* ---------- Footer: see also / family ---------- */
+
+.sd-ref-footer {
+	margin-top: 2.5rem;
+	padding-top: 1.15rem;
+	border-top: 1px solid var(--sd-hairline);
+	font-family: var(--sd-font-sans);
+	font-size: 0.875rem;
+}
+
+.sd-footer-heading {
+	font-family: var(--sd-font-sans);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+.sd-seealso-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem 1rem;
+	list-style: none;
+	padding: 0;
+	margin-top: 0.5rem;
+}
+
+.sd-seealso-list :is(a, .sd-seealso-plain) {
+	font-family: var(--sd-font-mono);
+	font-size: 0.8125rem;
+}
+
+.sd-seealso-plain {
+	color: var(--sd-ink-muted);
+}
+
+.sd-family {
+	margin-top: 1rem;
+	color: var(--sd-ink-muted);
+}
+
+.sd-family-name {
+	color: var(--sd-ink);
+}
+
+/* ---------- Reference index ---------- */
+
+.sd-index-group + .sd-index-group {
+	margin-top: 2.5rem;
+}
+
+.sd-index-title {
+	font-family: var(--sd-font-serif);
+	font-size: var(--sl-text-h2);
+	font-weight: 600;
+	border-top: 1px solid var(--sd-hairline);
+	padding-top: 1.15rem;
+	margin-top: 0;
+	color: var(--sl-color-white);
+}
+
+.sd-index-desc {
+	color: var(--sd-ink-muted);
+	margin-top: 0.4rem;
+}
+
+.sd-index-list {
+	margin-top: 1.1rem;
+}
+
+.sd-index-row {
+	display: grid;
+	grid-template-columns: minmax(10rem, 16rem) 1fr;
+	gap: 0.25rem 1.5rem;
+	padding-block: 0.55rem;
+	border-bottom: 1px solid var(--sd-hairline);
+}
+
+.sd-index-row:last-child {
+	border-bottom: 0;
+}
+
+.sd-index-name {
+	font-family: var(--sd-font-mono);
+	font-size: 0.875rem;
+	font-weight: 500;
+	margin: 0;
+}
+
+.sd-index-summary {
+	margin: 0;
+	padding-inline-start: 0;
+	color: var(--sd-ink-muted);
+	font-size: 0.9375rem;
+}
+
+@media (max-width: 40rem) {
+	.sd-index-row {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ---------- Metadata card ---------- */
+
+.sd-meta-panel {
+	padding: 0 var(--sl-sidebar-pad-x) 2rem;
+	width: calc(var(--sl-sidebar-width) - 2 * var(--sl-sidebar-pad-x));
+}
+
+.sd-meta-card {
+	border-top: 1px solid var(--sd-hairline);
+	padding-top: 0.9rem;
+	font-family: var(--sd-font-sans);
+	font-size: 0.75rem;
+	color: var(--sd-ink-muted);
+}
+
+.sd-meta-heading {
+	font-family: var(--sd-font-mono);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--sl-color-white);
+	margin-bottom: 0.5rem;
+}
+
+.sd-meta-list {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.15rem 0.6rem;
+	margin: 0;
+}
+
+.sd-meta-list dt {
+	color: var(--sd-ink-muted);
+}
+
+.sd-meta-list dd {
+	margin: 0;
+	color: var(--sd-ink);
+	overflow-wrap: anywhere;
+}
+
+.sd-meta-mono {
+	font-family: var(--sd-font-mono);
+}
+
+.sd-meta-links {
+	list-style: none;
+	padding: 0;
+	margin-top: 0.7rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.sd-meta-links a {
+	color: var(--sd-ink-muted);
+	text-decoration: none;
+}
+
+.sd-meta-links a:hover {
+	color: var(--sd-accent);
+	text-decoration: underline;
+}

@@ -1,0 +1,96 @@
+/*
+ * Editorial Scientific — changelog.
+ *
+ * NEWS.md is a stack of releases. Each `## pkg 1.2.0` becomes an anchored chip
+ * — the version set in mono inside a hairline box, sitting on the section rule
+ * — so a reader scanning for "when did this change" has a column of fixed marks
+ * to run their eye down. Change-type headings (`### Bug fixes`) drop back to
+ * small tracked caps, and the bullets lose their discs for en-dashes.
+ *
+ * Release dates are optional and come from the markdown, not the manifest: R
+ * may append `<time datetime="2026-08-01">2026-08-01</time>` inside the version
+ * heading, which is styled below. Nothing breaks when it is absent.
+ */
+
+/* ---------- Version headings ---------- */
+
+.sd-kind-news .sl-markdown-content .sl-heading-wrapper.level-h2 {
+	align-items: baseline;
+	margin-top: 2.75rem;
+}
+
+.sd-kind-news .sl-markdown-content h2 {
+	display: inline-block;
+	font-family: var(--sd-font-mono);
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	color: var(--sd-ink-strong);
+	/* The chip supplies the frame; base.css's section rule would double it. */
+	border-top: 0;
+	border: 1px solid var(--sd-hairline);
+	border-radius: 2px;
+	background: var(--sd-surface);
+	padding: 0.2rem 0.6rem;
+	margin-top: 0;
+}
+
+/* The first release on the page needs no gap above its chip. */
+.sd-kind-news .sl-markdown-content > .sl-heading-wrapper.level-h2:first-child {
+	margin-top: 0;
+}
+
+.sd-kind-news .sl-markdown-content h2 time {
+	font-family: var(--sd-font-sans);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	color: var(--sd-ink-muted);
+	margin-inline-start: 0.55rem;
+	text-transform: uppercase;
+}
+
+/* ---------- Change-type headings ---------- */
+
+.sd-kind-news .sl-markdown-content h3 {
+	font-family: var(--sd-font-sans);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+	margin-top: 1.75rem;
+}
+
+/* ---------- Change lists ---------- */
+
+.sd-kind-news .sl-markdown-content ul {
+	list-style: none;
+	padding-inline-start: 0;
+}
+
+.sd-kind-news .sl-markdown-content ul > li {
+	position: relative;
+	padding-inline-start: 1.15rem;
+}
+
+.sd-kind-news .sl-markdown-content ul > li::before {
+	content: '';
+	position: absolute;
+	inset-inline-start: 0;
+	top: 0.75em;
+	width: 0.45rem;
+	height: 1px;
+	background: var(--sd-ink-muted);
+}
+
+/* Nested lists keep the indent but drop back to a lighter mark. */
+.sd-kind-news .sl-markdown-content ul ul > li::before {
+	width: 0.25rem;
+	opacity: 0.7;
+}
+
+/* Issue and PR references read as metadata, not as prose. */
+.sd-kind-news .sl-markdown-content li code {
+	font-size: 0.8125em;
+}

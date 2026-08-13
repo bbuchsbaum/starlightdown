@@ -1,0 +1,49 @@
+/*
+ * Token fallbacks.
+ *
+ * Every `--sd-*` token, defined in terms of Starlight's own `--sl-*` variables.
+ * Loaded before everything else, so:
+ *
+ *   - with the bundled Editorial Scientific theme, tokens.css redefines these
+ *     later and wins;
+ *   - with an external theme preset (nova, ion), the theme CSS is skipped and
+ *     these aliases stand in, so the reference chrome, fused code cells, tables
+ *     and changelog still resolve every colour and font they reference.
+ *
+ * The rule for component CSS: reference only `--sd-*` tokens and `--sl-*`
+ * variables. Then it layers onto any theme without a single hard-coded colour.
+ */
+
+:root {
+	--sd-font-serif: var(--__sl-font);
+	--sd-font-sans: var(--__sl-font);
+	--sd-font-mono: var(--__sl-font-mono);
+
+	--sd-paper: var(--sl-color-bg);
+	--sd-surface: var(--sl-color-bg-sidebar);
+	--sd-ink: var(--sl-color-text);
+	--sd-ink-strong: var(--sl-color-white);
+	--sd-ink-muted: var(--sl-color-gray-3);
+	--sd-hairline: var(--sl-color-hairline);
+	--sd-hairline-strong: var(--sl-color-gray-5);
+	--sd-accent: var(--sl-color-text-accent);
+	--sd-accent-muted: var(--sl-color-accent);
+	--sd-accent-wash: var(--sl-color-accent-low);
+
+	--sd-code-bg: var(--sl-color-bg);
+	--sd-code-chrome: var(--sl-color-bg-nav);
+	--sd-code-border: var(--sl-color-hairline);
+	--sd-output-bg: var(--sl-color-gray-6);
+	--sd-output-ink: var(--sl-color-gray-3);
+
+	--sd-rule-message: var(--sl-color-blue);
+	--sd-rule-warning: var(--sl-color-orange);
+	--sd-rule-error: var(--sl-color-red);
+
+	/* Raster plots from R are drawn on white; keep them legible on dark pages. */
+	--sd-figure-plate: #f4f3ef;
+}
+
+:root[data-theme='light'] {
+	--sd-figure-plate: transparent;
+}

@@ -1,0 +1,218 @@
+/*
+ * Editorial Scientific — package homepage.
+ *
+ * A masthead, not a splash page. The package name is set as a specimen in mono,
+ * the DESCRIPTION Title runs beneath it as a serif tagline, and a hairline rule
+ * closes the block. Provenance (version, license, where the source lives) is
+ * small tracked Plex Sans, the way a masthead carries its imprint. No gradient,
+ * no illustration, no call-to-action buttons.
+ */
+
+/* ---------- Masthead ---------- */
+
+.sd-hero {
+	padding-bottom: 0.5rem;
+}
+
+.sd-hero-name {
+	font-family: var(--sd-font-mono);
+	font-size: clamp(2rem, calc(1.4rem + 2.4vw), 2.75rem);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	color: var(--sd-ink-strong);
+	overflow-wrap: anywhere;
+}
+
+.sd-hero-tagline {
+	font-family: var(--sd-font-serif);
+	font-size: clamp(1.0625rem, calc(0.9rem + 0.8vw), 1.375rem);
+	line-height: 1.45;
+	color: var(--sd-ink-muted);
+	max-width: 44ch;
+	margin-top: 0.6rem;
+	text-wrap: balance;
+}
+
+.sd-hero-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.6rem 2rem;
+	margin-top: 1.25rem;
+	padding-top: 0.9rem;
+	padding-bottom: 0.9rem;
+	border-top: 1px solid var(--sd-hairline);
+	border-bottom: 1px solid var(--sd-hairline);
+	font-family: var(--sd-font-sans);
+	font-size: 0.75rem;
+}
+
+.sd-fact-list,
+.sd-hero-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem 1.4rem;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.sd-fact {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.4rem;
+}
+
+.sd-fact-label {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+}
+
+.sd-fact-value {
+	color: var(--sd-ink);
+}
+
+.sd-fact-mono {
+	font-family: var(--sd-font-mono);
+}
+
+.sd-hero-links a {
+	color: var(--sd-ink-muted);
+	text-decoration: none;
+}
+
+.sd-hero-links a:hover {
+	color: var(--sd-accent);
+	text-decoration: underline;
+	text-underline-offset: 0.18em;
+}
+
+/* ---------- Section headings inside the hero and citation panel ---------- */
+
+.sd-section-heading {
+	font-family: var(--sd-font-sans);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+	margin-bottom: 0.6rem;
+	/* These are not document sections; no hairline rule above them. */
+	border-top: 0;
+	padding-top: 0;
+}
+
+/* ---------- Install tabs ---------- */
+
+.sd-install {
+	margin-top: 1.5rem;
+}
+
+/* Starlight's tab bar, reset to a hairline row of small tracked labels. */
+.sd-install starlight-tabs .tablist-wrapper ul {
+	border-bottom: 1px solid var(--sd-hairline);
+}
+
+.sd-install starlight-tabs [role='tab'] {
+	font-family: var(--sd-font-sans);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.02em;
+	color: var(--sd-ink-muted);
+	border-bottom-color: transparent;
+}
+
+.sd-install starlight-tabs [role='tab'][aria-selected='true'] {
+	color: var(--sd-accent);
+	font-weight: 600;
+	border-bottom-color: var(--sd-accent);
+}
+
+.sd-install [role='tabpanel'] {
+	margin-top: 0.75rem;
+}
+
+/* ---------- Quick start ---------- */
+
+.sd-quickstart {
+	margin-top: 1.75rem;
+}
+
+/* ---------- Citation ---------- */
+
+.sd-citation {
+	margin-top: 3rem;
+	padding-top: 1.15rem;
+	border-top: 1px solid var(--sd-hairline);
+}
+
+.sd-citation-text {
+	font-family: var(--sd-font-serif);
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	color: var(--sd-ink);
+	/* A hanging indent, the way a reference list is set. */
+	padding-inline-start: 1.5rem;
+	text-indent: -1.5rem;
+	max-width: 60ch;
+}
+
+.sd-bibtex {
+	margin-top: 0.9rem;
+	border-inline-start: 2px solid var(--sd-hairline);
+	padding-inline-start: 1rem;
+}
+
+.sd-bibtex > summary {
+	font-family: var(--sd-font-sans);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+	cursor: pointer;
+}
+
+.sd-bibtex > summary:hover {
+	color: var(--sd-accent);
+}
+
+.sd-bibtex[open] > summary {
+	margin-bottom: 0.6rem;
+}
+
+/* ---------- README body ---------- */
+
+/* A README badge row is a paragraph of shields; set it flush and unspaced. */
+.sd-kind-home .sl-markdown-content p:has(> a > img[src*='shields.io']),
+.sd-kind-home .sl-markdown-content p:has(> a > img[src*='badge']) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	align-items: center;
+}
+
+.sd-kind-home .sl-markdown-content p:has(> a > img[src*='shields.io']) img,
+.sd-kind-home .sl-markdown-content p:has(> a > img[src*='badge']) img {
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	padding: 0;
+	margin: 0;
+}
+
+/*
+ * A README opening with `# pkgname` duplicates the name the hero has already
+ * set. Starlight wraps markdown headings in `.sl-heading-wrapper`, so match that
+ * as well as a bare `h1`. R should strip the leading H1 when it converts
+ * README.md to index.md; this is the safety net for READMEs it cannot.
+ */
+.sd-kind-home .sl-markdown-content > h1:first-child,
+.sd-kind-home .sl-markdown-content > .sl-heading-wrapper.level-h1:first-child {
+	display: none;
+}

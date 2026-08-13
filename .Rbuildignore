@@ -1,0 +1,20 @@
+^\.gitignore$
+^\.Rbuildignore$
+^LICENSE\.md$
+^Plan\.md$
+^Architecture\.md$
+^Progress\.md$
+^Vision\.md$
+^notes\.md$
+^CLAUDE\.md$
+^altdoc$
+^pkgdown$
+^albersdown$
+^starlight$
+^\.github$
+^\.claude$
+# Superseded by the Starlight plugin; pending deletion from the working tree.
+^inst/themes$
+^inst/starlight-template/starlight\.sidebar\.mjs$
+^inst/starlight-template/src/styles/bauhaus\.css$
+^inst/starlight-template/src/styles/nova\.css$

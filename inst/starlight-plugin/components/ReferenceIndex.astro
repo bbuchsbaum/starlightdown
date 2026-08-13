@@ -1,0 +1,56 @@
+---
+import site from 'virtual:starlightdown/site';
+import LifecycleBadge from './LifecycleBadge.astro';
+import { topicIndex, withBase } from './utils.mjs';
+
+interface Props {
+	groups?: Array<Record<string, any>>;
+}
+
+const { groups = [] } = Astro.props;
+const index = topicIndex(site);
+
+/** Prefer the slug R resolved; fall back to the manifest's topic map. */
+function routeFor(entry: Record<string, any>) {
+	if (entry.slug) return withBase(entry.slug);
+	const topic = index.get(entry.name);
+	return topic ? withBase(topic.route) : null;
+}
+
+function summaryFor(entry: Record<string, any>) {
+	return entry.summary ?? index.get(entry.name)?.summary;
+}
+
+function lifecycleFor(entry: Record<string, any>) {
+	return entry.lifecycle ?? index.get(entry.name)?.lifecycle;
+}
+---
+
+{
+	groups.length > 0 && (
+		<div class="sd-reference-index">
+			{groups.map((group) => (
+				<section class="sd-index-group">
+					<h2 class="sd-index-title">{group.title}</h2>
+					{group.desc && <p class="sd-index-desc">{group.desc}</p>}
+					<dl class="sd-index-list">
+						{(group.topics ?? []).map((entry: Record<string, any>) => {
+							const href = routeFor(entry);
+							const summary = summaryFor(entry);
+							const lifecycle = lifecycleFor(entry);
+							return (
+								<div class="sd-index-row">
+									<dt class="sd-index-name">
+										{href ? <a href={href}>{entry.name}</a> : <span>{entry.name}</span>}
+										<LifecycleBadge lifecycle={lifecycle} variant="dot" />
+									</dt>
+									<dd class="sd-index-summary">{summary}</dd>
+								</div>
+							);
+						})}
+					</dl>
+				</section>
+			))}
+		</div>
+	)
+}

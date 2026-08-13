@@ -1,0 +1,36 @@
+---
+/**
+ * Installation instructions, one tab per available source.
+ *
+ * Only the sources R actually found are rendered — a package that is not on
+ * CRAN shows no CRAN tab rather than an install line that fails. `syncKey`
+ * means a reader who picks R-universe once keeps it across every page.
+ */
+import site from 'virtual:starlightdown/site';
+import { Tabs, TabItem, Code } from '@astrojs/starlight/components';
+
+const install = site.install ?? {};
+
+const sources = [
+	['CRAN', install.cran],
+	['R-universe', install.runiverse],
+	['GitHub', install.github],
+].filter(([, code]) => typeof code === 'string' && code.trim().length > 0);
+---
+
+{
+	sources.length > 0 && (
+		<div class="sd-install">
+			<h2 class="sd-section-heading" id="installation">
+				Installation
+			</h2>
+			<Tabs syncKey="install">
+				{sources.map(([label, code]) => (
+					<TabItem label={label}>
+						<Code lang="r" code={code.trim()} />
+					</TabItem>
+				))}
+			</Tabs>
+		</div>
+	)
+}

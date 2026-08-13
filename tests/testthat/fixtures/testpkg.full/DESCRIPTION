@@ -1,0 +1,18 @@
+Package: testpkg.full
+Type: Package
+Title: A Full-Featured Test Package for 'starlightdown'
+Version: 0.2.1
+Authors@R:
+    person("Test", "Author", email = "test@example.com", role = c("aut", "cre"))
+Description: A fixture package exercising the reference pipeline: Rd tag
+    coverage, reference selectors, package Rd macros, lifecycle badges and
+    executable examples that draw plots.
+License: MIT + file LICENSE
+Encoding: UTF-8
+URL: https://testuser.github.io/testpkg.full,
+    https://github.com/testuser/testpkg.full
+BugReports: https://github.com/testuser/testpkg.full/issues
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

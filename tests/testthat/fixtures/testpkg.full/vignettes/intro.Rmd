@@ -1,0 +1,50 @@
+---
+title: "Getting started with testpkg.full"
+description: "A short tour that exercises prose, code cells, math and figures."
+vignette: >
+  %\VignetteIndexEntry{Getting started with testpkg.full}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This article exists to exercise the article pipeline: prose, a code cell with
+output, a message, math, a generated figure and a static image.
+
+## Adding numbers
+
+The workhorse is `full_add()`:
+
+```{r}
+library(testpkg.full)
+full_add(1:5)
+```
+
+It notices when you ask it to say something:
+
+```{r}
+message("about to add")
+full_add(1, 2)
+```
+
+## A little maths
+
+Inline math like $a^2 + b^2$ should survive, and so should a display equation:
+
+$$
+\sum_{i = 1}^{n} x_i + y = ny + \sum_{i = 1}^{n} x_i
+$$
+
+## A generated figure
+
+```{r, fig.cap = "A sequence, plotted."}
+full_plot(10)
+```
+
+## A static image
+
+![The project mark.](mark.svg)
+
+## Where next
+
+See the [function reference](/reference/) for the full listing, or
+[`full_add()`](/reference/full_add/) for the details.

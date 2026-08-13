@@ -1,0 +1,138 @@
+/*
+ * Editorial Scientific — palette.
+ *
+ * Paper and ink, with a single madder-red accent reserved for links, the active
+ * navigation item, and focus rings. Nothing else is coloured; hierarchy comes
+ * from weight, size and hairlines.
+ *
+ * Starlight's own convention is that `:root` carries the dark theme and
+ * `:root[data-theme='light']` overrides it. `ThemeProvider` always stamps
+ * `data-theme`, so both branches are always explicit. We follow that convention
+ * so a theme switch never leaves a variable half-defined.
+ *
+ * Contrast (WCAG 2.1, non-bold body text):
+ *   light  ink #1D1E20 on #FCFCFA  15.9:1   secondary #54565B  7.1:1
+ *          accent #8A3033          8.0:1
+ *   dark   ink #E8E6E1 on #15171A  14.6:1   secondary #9A9CA1  6.6:1
+ *          accent #D07578          5.7:1
+ */
+
+/* ---------- Dark (Starlight's `:root` default) ---------- */
+
+:root,
+::backdrop {
+	--sd-paper: #15171a;
+	--sd-surface: #1b1e22;
+	--sd-ink: #e8e6e1;
+	--sd-ink-strong: #f3f1ec;
+	--sd-ink-muted: #9a9ca1;
+	--sd-hairline: #2a2d32;
+	--sd-hairline-strong: #383c43;
+	--sd-accent: #d07578;
+	--sd-accent-muted: #b8555a;
+	--sd-accent-wash: #33191b;
+
+	--sd-code-bg: #1a1d21;
+	--sd-code-chrome: #202429;
+	--sd-code-border: #2a2d32;
+	--sd-output-bg: #17191d;
+	--sd-output-ink: #a8aaaf;
+
+	/* Left rules on message / warning / error output. */
+	--sd-rule-message: #6d7f96;
+	--sd-rule-warning: #b08442;
+	--sd-rule-error: #c05f62;
+
+	/* Backing plate behind raster plots so light figures stay legible. */
+	--sd-figure-plate: #f4f3ef;
+
+	--sl-color-white: var(--sd-ink-strong);
+	--sl-color-gray-1: var(--sd-ink);
+	--sl-color-gray-2: #d2d0cb;
+	--sl-color-gray-3: var(--sd-ink-muted);
+	--sl-color-gray-4: #6c6e74;
+	--sl-color-gray-5: #3a3d43;
+	--sl-color-gray-6: var(--sd-hairline);
+	--sl-color-gray-7: var(--sd-surface);
+	--sl-color-black: var(--sd-paper);
+
+	--sl-color-accent-low: var(--sd-accent-wash);
+	--sl-color-accent: var(--sd-accent-muted);
+	--sl-color-accent-high: var(--sd-accent);
+
+	--sl-color-text: var(--sd-ink);
+	--sl-color-text-accent: var(--sd-accent);
+	--sl-color-text-invert: var(--sd-paper);
+	--sl-color-bg: var(--sd-paper);
+	--sl-color-bg-nav: var(--sd-surface);
+	--sl-color-bg-sidebar: var(--sd-surface);
+	--sl-color-bg-inline-code: #22262b;
+	--sl-color-bg-accent: var(--sd-accent);
+	--sl-color-hairline-light: var(--sd-hairline-strong);
+	--sl-color-hairline: var(--sd-hairline);
+	--sl-color-hairline-shade: #101215;
+	--sl-color-backdrop-overlay: hsla(220, 12%, 8%, 0.72);
+
+	/* The design carries structure in hairlines, not in elevation. */
+	--sl-shadow-sm: none;
+	--sl-shadow-md: none;
+	--sl-shadow-lg: 0 1px 0 var(--sd-hairline);
+}
+
+/* ---------- Light ---------- */
+
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+	--sd-paper: #fcfcfa;
+	--sd-surface: #f6f5f1;
+	--sd-ink: #1d1e20;
+	--sd-ink-strong: #131416;
+	--sd-ink-muted: #54565b;
+	--sd-hairline: #e4e2dc;
+	--sd-hairline-strong: #d3d0c8;
+	--sd-accent: #8a3033;
+	--sd-accent-muted: #6e2528;
+	--sd-accent-wash: #f4e7e7;
+
+	--sd-code-bg: #fbfaf7;
+	--sd-code-chrome: #f2f0ea;
+	--sd-code-border: #e4e2dc;
+	--sd-output-bg: #f7f6f2;
+	--sd-output-ink: #54565b;
+
+	--sd-rule-message: #5b6f88;
+	--sd-rule-warning: #96702f;
+	--sd-rule-error: #9c3a3d;
+
+	--sd-figure-plate: transparent;
+
+	--sl-color-white: var(--sd-ink-strong);
+	--sl-color-gray-1: var(--sd-ink);
+	--sl-color-gray-2: #3a3c41;
+	--sl-color-gray-3: var(--sd-ink-muted);
+	--sl-color-gray-4: #83858b;
+	--sl-color-gray-5: var(--sd-hairline-strong);
+	--sl-color-gray-6: var(--sd-hairline);
+	--sl-color-gray-7: var(--sd-surface);
+	--sl-color-black: var(--sd-paper);
+
+	--sl-color-accent-low: var(--sd-accent-wash);
+	--sl-color-accent: var(--sd-accent);
+	--sl-color-accent-high: var(--sd-accent-muted);
+
+	--sl-color-text: var(--sd-ink);
+	--sl-color-text-accent: var(--sd-accent);
+	--sl-color-text-invert: var(--sd-paper);
+	--sl-color-bg-nav: var(--sd-paper);
+	--sl-color-bg-sidebar: var(--sd-surface);
+	--sl-color-bg-inline-code: #f1efe9;
+	--sl-color-bg-accent: var(--sd-accent);
+	--sl-color-hairline-light: var(--sd-hairline);
+	--sl-color-hairline: var(--sd-hairline);
+	--sl-color-hairline-shade: var(--sd-hairline);
+	--sl-color-backdrop-overlay: hsla(40, 8%, 40%, 0.5);
+
+	--sl-shadow-sm: none;
+	--sl-shadow-md: none;
+	--sl-shadow-lg: 0 1px 0 var(--sd-hairline);
+}

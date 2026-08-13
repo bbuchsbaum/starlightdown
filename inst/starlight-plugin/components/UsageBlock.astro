@@ -1,0 +1,18 @@
+---
+import { Code } from '@astrojs/starlight/components';
+
+interface Props {
+	usage?: string;
+}
+
+const usage = Astro.props.usage?.replace(/\s+$/, '');
+---
+
+{
+	usage && (
+		<div class="sd-usage">
+			<h2 class="sd-usage-heading sr-only">Usage</h2>
+			<Code lang="r" code={usage} frame="none" />
+		</div>
+	)
+}

@@ -1,0 +1,19 @@
+reference:
+- title: "Core, one's favourites"
+  desc: >
+    Primary entry points. These are the functions you'll reach for first.
+  contents:
+  - full_add
+  - starts_with("full_c")
+- title: Everything else
+  contents:
+  - full_describe
+  - full_experimental
+  - full_plot
+  - full_quotes
+  - "+.fullclass"
+
+articles:
+- title: Guides
+  contents:
+  - intro

@@ -1,0 +1,24 @@
+---
+/**
+ * Reference pages have no H1 in their markdown body — the function name lives in
+ * frontmatter, and Starlight renders it here. Rather than emit a second heading
+ * inside the content (two H1s, a broken TOC anchor, a duplicated tab title), we
+ * replace the title component itself: `ReferenceHeader` still renders the H1
+ * with Starlight's `_top` id, and hangs the aliases, lifecycle and source link
+ * off it. Every other kind of page falls through to whichever component held
+ * this slot before us — a theme preset's, or Starlight's own.
+ */
+import InnerPageTitle from 'virtual:starlightdown/inner/PageTitle';
+import ReferenceHeader from '../ReferenceHeader.astro';
+
+const { kind, sd } = Astro.locals.starlightdown ?? { kind: 'article', sd: {} };
+const title = Astro.locals.starlightRoute.entry.data.title;
+---
+
+{
+	kind === 'reference' ? (
+		<ReferenceHeader sd={sd} title={title} />
+	) : (
+		<InnerPageTitle />
+	)
+}

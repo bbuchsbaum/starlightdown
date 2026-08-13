@@ -1,0 +1,55 @@
+---
+import site from 'virtual:starlightdown/site';
+import { topicIndex, resolveSeeAlso } from './utils.mjs';
+
+interface Props {
+	sd: Record<string, any>;
+}
+
+const { sd } = Astro.props;
+const index = topicIndex(site);
+
+const seealso = (sd.seealso ?? [])
+	.map((item: unknown) => resolveSeeAlso(item, index))
+	.filter(Boolean);
+
+const families = sd.family ? (Array.isArray(sd.family) ? sd.family : [sd.family]) : [];
+---
+
+{
+	(seealso.length > 0 || families.length > 0) && (
+		<footer class="sd-ref-footer">
+			{seealso.length > 0 && (
+				<div class="sd-seealso">
+					<h2 class="sd-footer-heading">See also</h2>
+					<ul class="sd-seealso-list">
+						{seealso.map((item: any) => (
+							<li>
+								{item.href ? (
+									<a href={item.href} rel={item.external ? 'external' : undefined}>
+										{item.label}
+									</a>
+								) : (
+									<span class="sd-seealso-plain">{item.label}</span>
+								)}
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
+
+			{families.length > 0 && (
+				<p class="sd-family">
+					Part of {families.length > 1 ? 'the families' : 'the family'}{' '}
+					{families.map((family: string, i: number) => (
+						<>
+							{i > 0 && ', '}
+							<span class="sd-family-name">{family}</span>
+						</>
+					))}
+					.
+				</p>
+			)}
+		</footer>
+	)
+}

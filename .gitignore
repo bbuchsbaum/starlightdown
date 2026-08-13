@@ -1,0 +1,24 @@
+# Reference clones / showcase (not part of the package)
+/altdoc/
+/pkgdown/
+/albersdown/
+
+# Node / Astro artifacts
+node_modules/
+dist/
+.astro/
+
+# starlightdown build machinery
+_freeze/
+.starlightdown-cache/
+starlight/.starlightdown/
+
+# R artifacts
+.Rproj.user/
+.Rhistory
+.RData
+*.Rcheck/
+*.tar.gz
+
+# OS
+.DS_Store

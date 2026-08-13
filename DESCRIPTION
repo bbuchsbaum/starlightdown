@@ -1,0 +1,43 @@
+Package: starlightdown
+Type: Package
+Title: Documentation Websites for R Packages with Astro Starlight
+Version: 0.0.0.9000
+Authors@R:
+    person("Bradley R.", "Buchsbaum",
+           email = "brad.buchsbaum@gmail.com",
+           role = c("aut", "cre"))
+Description: A documentation compiler for R packages targeting the 'Astro'
+    'Starlight' framework. Uses the 'pkgdown' package model for navigation
+    and reference metadata, 'Quarto' for executing vignettes and articles,
+    and renders 'Rd' documentation directly to Markdown with structured
+    frontmatter consumed by a bundled Starlight plugin. Configuration stays
+    compatible with '_pkgdown.yml'.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: R (>= 4.1)
+Imports:
+    cli,
+    desc,
+    downlit,
+    evaluate,
+    fs,
+    grDevices,
+    jsonlite,
+    pkgdown (>= 2.0.0),
+    processx,
+    tools,
+    utils,
+    withr,
+    yaml
+Suggests:
+    knitr,
+    quarto,
+    ragg,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+URL: https://github.com/bbuchsbaum/starlightdown
+BugReports: https://github.com/bbuchsbaum/starlightdown/issues

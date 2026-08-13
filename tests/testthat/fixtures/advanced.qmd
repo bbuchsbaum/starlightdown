@@ -1,0 +1,31 @@
+---
+title: "Advanced usage"
+description: "Options, S3 dispatch and the things you reach for second."
+---
+
+A `.qmd` article, to prove the pipeline does not care which extension it gets.
+It carries no `vignette:` block, so it is an article rather than a registered
+vignette -- which is exactly how Quarto-only documents usually appear.
+
+## Options
+
+```{r}
+library(testpkg.full)
+str(full_config(digits = 5))
+```
+
+## Dispatch
+
+`full_describe()` is generic:
+
+```{r}
+full_describe(1:5)
+full_describe("a")
+```
+
+## A table
+
+| Function | Operation |
+| --- | --- |
+| `full_add()` | `x + y` |
+| `full_experimental()` | `x * 2` |

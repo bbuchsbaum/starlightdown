@@ -1,0 +1,28 @@
+---
+/**
+ * Dispatcher: tags the page body with its `sd.kind` and injects the chrome that
+ * kind needs around the rendered markdown. Everything injected here sits inside
+ * `.sl-markdown-content`, so it inherits prose spacing and typography.
+ *
+ * The citation panel goes *after* the README rather than directly under the
+ * hero: install instructions belong above the fold, but "how to cite" is
+ * something a reader looks for once they have decided to use the package.
+ */
+import InnerMarkdownContent from 'virtual:starlightdown/inner/MarkdownContent';
+import UsageBlock from '../UsageBlock.astro';
+import ReferenceFooter from '../ReferenceFooter.astro';
+import ReferenceIndex from '../ReferenceIndex.astro';
+import CitationPanel from '../CitationPanel.astro';
+
+const { kind, sd } = Astro.locals.starlightdown ?? { kind: 'article', sd: {} };
+---
+
+<div class={`sd-kind sd-kind-${kind}`}>
+	<InnerMarkdownContent>
+		{kind === 'reference' && <UsageBlock usage={sd.usage} />}
+		{kind === 'reference-index' && <ReferenceIndex groups={sd.groups} />}
+		<slot />
+		{kind === 'reference' && <ReferenceFooter sd={sd} />}
+		{kind === 'home' && <CitationPanel />}
+	</InnerMarkdownContent>
+</div>

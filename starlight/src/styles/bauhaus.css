@@ -1,0 +1,294 @@
+/* --- BAUHAUS / ALBERS INTERACTION v7 ------------------------------------
+   Philosophy: "Homage to the Square"
+   1. No gradients. Flat planes of color only.
+   2. No soft blurs. Hard shadows or no shadows.
+   3. Sharp geometry. 0px or tight 2px radii.
+   4. Typography provides the texture.
+------------------------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* TOKENS --------------------------------------------------------------- */
+
+:root {
+  /* Typography: Swiss International Style */
+  --sl-font: 'DM Sans', system-ui, sans-serif;
+  --sl-font-mono: 'IBM Plex Mono', monospace;
+  --sl-text-base: 17px;
+  --sl-line-height: 1.6;
+
+  /* PALETTE: Interaction of Color */
+  /* The Paper */
+  --bg-paper: #f4f1ea;     /* Warm Unbleached */
+  --bg-sidebar: #e8e4db;   /* Slightly Darker Paper */
+  --bg-code: #ffffff;      /* Pure White (The "Hole" in the paper) */
+
+  /* The Inks */
+  --ink-primary: #1a1a1a;  /* Near Black */
+  --ink-secondary: #5a5a5a;
+  --ink-tertiary: #898989;
+
+  /* The Albers Accents (Flat, Matte Colors) */
+  --color-vermilion: #d64515; /* Active / Alert */
+  --color-ochre: #d69f15;     /* Warning / Highlight */
+  --color-teal: #158fad;      /* Info / Link */
+  --color-cobalt: #1c3f94;    /* Deep Accent */
+
+  /* Mappings */
+  --sl-color-bg: var(--bg-paper);
+  --sl-color-bg-nav: var(--bg-sidebar);
+  --sl-color-text: var(--ink-primary);
+  --sl-color-accent: var(--color-vermilion);
+  --sl-color-gray-1: var(--ink-primary);
+  --sl-color-gray-2: var(--ink-secondary);
+  --sl-color-gray-3: var(--ink-tertiary);
+  
+  --sl-content-width: 900px;
+  --sl-sidebar-width: 19rem;
+}
+
+/* DARK MODE: "The Night Studio" */
+:root[data-theme='dark'] {
+  --bg-paper: #181818;
+  --bg-sidebar: #111111;
+  --bg-code: #000000;
+
+  --ink-primary: #e6e6e6;
+  --ink-secondary: #a0a0a0;
+  --ink-tertiary: #666666;
+
+  /* In dark mode, colors must be slightly lighter to vibrate correctly */
+  --color-vermilion: #ff5e2e;
+  --color-ochre: #ffc233;
+  --color-teal: #33bbdd;
+  --color-cobalt: #4d77ff;
+}
+
+/* GLOBAL RESET --------------------------------------------------------- */
+
+/* The Bauhaus rejected unnecessary ornament. No rounded corners. */
+* {
+  border-radius: 0 !important;
+}
+
+body {
+  background-color: var(--bg-paper);
+  background-image: none; /* No gradients */
+}
+
+/* HEADER --------------------------------------------------------------- */
+
+header, .nova-page-frame-header {
+  background-color: var(--bg-paper) !important; /* Merge header with body */
+  border-bottom: 2px solid var(--ink-primary);  /* Structural Line */
+  box-shadow: none !important;
+}
+
+.site-title {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink-primary) !important;
+  font-size: 1.2rem;
+}
+
+/* The Search Bar: A distinct geometric element */
+site-search button[data-open-modal] {
+  background: var(--bg-code) !important;
+  border: 1px solid var(--ink-primary) !important;
+  color: var(--ink-secondary) !important;
+  box-shadow: 4px 4px 0 0 rgba(0,0,0,0.1) !important; /* Hard shadow */
+  height: 2.5rem !important;
+}
+
+site-search button[data-open-modal]:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 0 var(--color-vermilion) !important; /* Color interaction on hover */
+  border-color: var(--color-vermilion) !important;
+  color: var(--ink-primary) !important;
+}
+
+site-search kbd {
+  background: var(--ink-primary) !important;
+  color: var(--bg-paper) !important;
+  font-family: var(--sl-font-mono);
+  border: none !important;
+}
+
+/* SIDEBAR -------------------------------------------------------------- */
+
+.sidebar-pane {
+  background-color: var(--bg-sidebar) !important;
+  border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+.sidebar-pane summary {
+  color: var(--ink-primary) !important;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--ink-tertiary);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-pane a {
+  color: var(--ink-secondary) !important;
+  border-left: 4px solid transparent; /* Structural indent */
+  padding: 0.4rem 1rem;
+  transition: none; /* Instant state change, mechanical feel */
+}
+
+/* Hover: A grey plane */
+.sidebar-pane a:hover:not([aria-current='page']) {
+  background-color: rgba(0,0,0,0.05);
+  color: var(--ink-primary) !important;
+}
+
+/* Active: The Vermilion Square */
+.sidebar-pane a[aria-current='page'] {
+  background-color: var(--color-vermilion);
+  color: #fff !important;
+  font-weight: 600;
+  border-left: 4px solid var(--ink-primary); /* High contrast edge */
+}
+
+/* RIGHT TOC ------------------------------------------------------------ */
+
+.right-sidebar-panel {
+  border-left: 2px solid var(--ink-primary); /* Visible structure */
+}
+.right-sidebar-panel a {
+  font-size: 0.8rem;
+  color: var(--ink-secondary) !important;
+}
+.right-sidebar-panel a:hover {
+  color: var(--color-vermilion) !important;
+  text-decoration: underline;
+}
+
+/* CONTENT TYPOGRAPHY --------------------------------------------------- */
+
+.sl-markdown-content h1 {
+  font-size: 3rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-bottom: 2rem;
+  letter-spacing: -0.04em;
+  /* The Albers Bar: A solid block of color next to the title */
+  border-left: 1rem solid var(--color-vermilion);
+  padding-left: 1rem;
+}
+
+/* Remove the floating gradient bar from previous version */
+.sl-markdown-content h1::before { display: none; }
+
+.sl-markdown-content h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-top: 3rem;
+  border-top: 1px solid var(--ink-primary); /* Line above, not below */
+  padding-top: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.sl-markdown-content a {
+  color: var(--color-cobalt);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+.sl-markdown-content a:hover {
+  background-color: var(--color-cobalt);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* CODE BLOCKS (The Machine) -------------------------------------------- */
+
+.sl-markdown-content pre {
+  background-color: var(--bg-code) !important;
+  border: 1px solid var(--ink-primary) !important;
+  /* A sharp, flat shadow */
+  box-shadow: 8px 8px 0 0 rgba(0,0,0,0.1); 
+  padding: 1rem !important;
+  margin-block: 2rem;
+  /* The Spine */
+  border-left: 6px solid var(--color-cobalt) !important;
+}
+
+/* Remove gradient top */
+.sl-markdown-content pre::before { display: none; }
+
+/* Inline Code */
+.sl-markdown-content code {
+  font-family: var(--sl-font-mono);
+  background-color: rgba(0,0,0,0.06);
+  color: var(--color-cobalt);
+  font-weight: 600;
+  padding: 0.2em 0.4em;
+}
+
+html[data-theme='dark'] .sl-markdown-content code {
+  background-color: rgba(255,255,255,0.1);
+  color: var(--color-teal);
+}
+
+/* DATA VISUALIZATION (Tables & DLs) ------------------------------------ */
+
+.sl-markdown-content table {
+  border: 1px solid var(--ink-primary);
+}
+.sl-markdown-content th {
+  background-color: var(--ink-primary);
+  color: var(--bg-paper);
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-bottom: none;
+}
+.sl-markdown-content td {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Arguments List */
+.sl-markdown-content dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem 2rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.sl-markdown-content dt {
+  grid-column: 1;
+  font-family: var(--sl-font-mono);
+  background: var(--bg-code);
+  border: 1px solid var(--ink-primary);
+  padding: 0.2em 0.5em;
+  color: var(--ink-primary);
+  align-self: start;
+  box-shadow: 3px 3px 0 0 rgba(0,0,0,0.1); /* Mini hard shadow */
+}
+.sl-markdown-content dd {
+  grid-column: 2;
+  margin: 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 0.5rem;
+}
+
+/* ADMONITIONS / BLOCKQUOTES -------------------------------------------- */
+
+.sl-markdown-content blockquote {
+  background: var(--bg-code);
+  border-left: 6px solid var(--color-ochre);
+  border-top: 1px solid var(--ink-primary);
+  border-right: 1px solid var(--ink-primary);
+  border-bottom: 1px solid var(--ink-primary);
+  box-shadow: 6px 6px 0 0 rgba(0,0,0,0.05);
+  margin: 2rem 0;
+  padding: 1rem 1.5rem;
+  font-style: normal;
+}

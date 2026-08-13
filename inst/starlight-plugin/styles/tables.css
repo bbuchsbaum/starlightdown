@@ -1,0 +1,58 @@
+/*
+ * Editorial Scientific — tables.
+ *
+ * Hairlines only: no zebra striping, no vertical rules, no fill. A heavier rule
+ * under the header row and a light rule between body rows, which is how a table
+ * is set in print. Column heads are small tracked Plex Sans; numbers are
+ * tabular so columns align.
+ *
+ * Starlight already gives `.sl-markdown-content table` `display: block` with
+ * `overflow: auto`, so wide tables scroll inside the measure on their own.
+ */
+
+.sl-markdown-content table {
+	font-family: var(--sd-font-sans);
+	font-size: 0.9375rem;
+	line-height: 1.55;
+	width: 100%;
+	max-width: 100%;
+	font-variant-numeric: tabular-nums;
+	border-collapse: collapse;
+}
+
+.sl-markdown-content th {
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: var(--sd-ink-muted);
+	border-bottom: 1px solid var(--sd-ink-muted);
+	padding-block: 0.45rem;
+	white-space: nowrap;
+}
+
+.sl-markdown-content td {
+	border-bottom: 1px solid var(--sd-hairline);
+	padding-block: 0.6rem;
+	vertical-align: baseline;
+}
+
+.sl-markdown-content tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.sl-markdown-content tbody tr {
+	transition: background-color 0.1s ease;
+}
+
+.sl-markdown-content tbody tr:hover {
+	background-color: color-mix(in srgb, var(--sd-ink) 3.5%, transparent);
+}
+
+/* Code in a table cell is dense already; drop the pill. */
+.sl-markdown-content :is(th, td) code {
+	background: transparent;
+	padding-inline: 0;
+	font-size: 0.875em;
+	color: var(--sd-ink);
+}

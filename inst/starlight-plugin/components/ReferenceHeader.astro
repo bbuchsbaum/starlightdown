@@ -1,0 +1,51 @@
+---
+import site from 'virtual:starlightdown/site';
+import LifecycleBadge from './LifecycleBadge.astro';
+import { sourceUrl } from './utils.mjs';
+
+interface Props {
+	sd: Record<string, any>;
+	title: string;
+}
+
+const { sd, title } = Astro.props;
+const name = sd.name ?? title;
+// The primary name is already the heading; repeating it as a chip is noise.
+const aliases = (sd.aliases ?? []).filter((alias: string) => alias !== name);
+const source = sourceUrl(site, sd.source);
+---
+
+<div class="sd-ref-header">
+	<h1 id="_top" class="sd-ref-title">{name}</h1>
+
+	{
+		(sd.lifecycle || sd.since || source) && (
+			<p class="sd-ref-meta">
+				<LifecycleBadge lifecycle={sd.lifecycle} />
+				{sd.since && (
+					<span class="sd-since">
+						Since <span class="sd-since-version">{sd.since}</span>
+					</span>
+				)}
+				{source && (
+					<a class="sd-source-link" href={source}>
+						{sd.source}
+					</a>
+				)}
+			</p>
+		)
+	}
+
+	{
+		aliases.length > 0 && (
+			<div class="sd-aliases">
+				<span class="sd-aliases-label">Also documents</span>
+				<ul class="sd-alias-list">
+					{aliases.map((alias: string) => (
+						<li class="sd-alias">{alias}</li>
+					))}
+				</ul>
+			</div>
+		)
+	}
+</div>
