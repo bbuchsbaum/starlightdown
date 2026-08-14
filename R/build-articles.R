@@ -163,6 +163,9 @@ sd_harvest_article <- function(vignette, pkg, build_dir, articles_dir) {
   # Quarto writes a raw <img> for any figure with an alignment or width; Astro
   # would pass it through and never emit the file it names.
   body <- sd_html_images_to_markdown(body)
+  # Quarto also rewrites callout divs as GitHub alerts, which Starlight spells
+  # `:::note`. An alert type it could not name arrives as literal `[!NONE]`.
+  body <- sd_alerts_to_asides(body)
   body <- sd_restore_root_links(body, depth = sd_path_depth(fs::path_dir(file_in)))
   body <- sd_apply_base_to_links(body, pkg$base)
 

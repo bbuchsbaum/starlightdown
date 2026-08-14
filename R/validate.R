@@ -18,6 +18,7 @@ sd_validate_stage <- function(stage, routes, manifest, pkg, written_redirects = 
     sd_check_index_groups(stage$content),
     sd_check_relative_targets(stage$content),
     sd_check_emittable_images(stage$content),
+    sd_check_rendered_alerts(stage$content),
     sd_check_prose_links(stage$content, routes, manifest, pkg),
     sd_check_route_bijection(stage$content, routes),
     sd_check_redirect_collisions(routes, written_redirects)
@@ -200,6 +201,24 @@ sd_check_emittable_images <- function(content_dir) {
       problems <- c(problems, paste0(
         rel, ": raw <img src='", src, "'> would not be emitted by Astro; ",
         "it must be a Markdown image."
+      ))
+    }
+  }
+  problems
+}
+
+# An alert marker only renders if something downstream understands it. The
+# builders convert them all to asides, so one surviving here would reach the
+# reader as literal text -- which is how `[!NONE]` shipped.
+#' @noRd
+sd_check_rendered_alerts <- function(content_dir) {
+  problems <- character()
+  for (path in sd_stage_pages(content_dir)) {
+    rel <- as.character(fs::path_rel(path, content_dir))
+    for (type in sd_unrenderable_alerts(sd_read_utf8(path))) {
+      problems <- c(problems, paste0(
+        rel, ": alert marker '[!", type, "]' would render as literal text; ",
+        "it must be a Starlight aside."
       ))
     }
   }

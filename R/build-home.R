@@ -40,6 +40,8 @@ sd_build_home <- function(pkg, stage_dir) {
     # READMEs commonly place the package logo with a raw <img>; Astro emits
     # only Markdown images, so normalise before anything is relocated.
     body <- sd_html_images_to_markdown(body)
+    # READMEs on GitHub commonly use alert blockquotes.
+    body <- sd_alerts_to_asides(body)
 
     moved <- sd_relocate_local_images(body, pkg, stage_dir)
     body <- moved$body

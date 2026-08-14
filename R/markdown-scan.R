@@ -290,6 +290,105 @@ sd_unemittable_images <- function(text) {
   unique(srcs[sd_md_is_relative(srcs)])
 }
 
+# GitHub alert types, mapped onto the four asides Starlight actually renders.
+# Anything Quarto could not name -- including the literal `NONE` it emits for a
+# callout class it does not recognise -- has no aside to map to.
+sd_alert_asides <- c(
+  NOTE = "note",
+  TIP = "tip",
+  IMPORTANT = "note",
+  WARNING = "caution",
+  CAUTION = "danger"
+)
+
+#' Rewrite GitHub alert blockquotes as Starlight asides
+#'
+#' Quarto turns any `callout-*` div into an alert blockquote when writing GFM,
+#' and writes `> [!NONE]` for a class it does not recognise -- which is not
+#' alert syntax at all, so it reaches the reader as the literal text
+#' `[!NONE]`. Asides are Starlight's own documented form, so every alert is
+#' converted to one; an unrecognised type keeps its content as a plain
+#' blockquote rather than shipping a marker nobody can read.
+#'
+#' @noRd
+sd_alerts_to_asides <- function(text) {
+  lines <- strsplit(text, "\n", fixed = TRUE)[[1L]]
+  if (!length(lines)) {
+    return(text)
+  }
+  prose <- sd_md_prose_lines(text)
+
+  out <- character()
+  i <- 1L
+  while (i <= length(lines)) {
+    marker <- regmatches(
+      lines[[i]],
+      regexec("^[ \t]{0,3}>[ \t]*\\[!([A-Za-z]+)\\][ \t]*$", lines[[i]])
+    )[[1L]]
+
+    if (!length(marker) || !prose[[i]]) {
+      out <- c(out, lines[[i]])
+      i <- i + 1L
+      next
+    }
+
+    # Consume the rest of the blockquote.
+    j <- i + 1L
+    body <- character()
+    while (j <= length(lines) && grepl("^[ \t]{0,3}>", lines[[j]])) {
+      body <- c(body, sub("^[ \t]{0,3}>[ \t]?", "", lines[[j]]))
+      j <- j + 1L
+    }
+    while (length(body) && !nzchar(trimws(body[[1L]]))) body <- body[-1L]
+    while (length(body) && !nzchar(trimws(body[[length(body)]]))) body <- body[-length(body)]
+
+    aside <- unname(sd_alert_asides[toupper(marker[[2L]])])
+    if (is.na(aside)) {
+      # Unknown type: keep the words, drop the unreadable marker.
+      out <- c(out, paste0("> ", body))
+    } else {
+      out <- c(out, paste0(":::", aside), body, ":::")
+    }
+    i <- j
+  }
+
+  # strsplit() drops a trailing newline; putting it back keeps this a
+  # content transform rather than a whitespace one.
+  paste0(paste0(out, collapse = "\n"), if (endsWith(text, "\n")) "\n" else "")
+}
+
+#' Which lines of a document are prose (not inside a fenced block)?
+#' @noRd
+sd_md_prose_lines <- function(text) {
+  view <- sd_md_view(text)
+  view_lines <- strsplit(view, "\n", fixed = TRUE)[[1L]]
+  raw_lines <- strsplit(text, "\n", fixed = TRUE)[[1L]]
+  if (length(view_lines) != length(raw_lines)) {
+    return(rep(TRUE, length(raw_lines)))
+  }
+  # A blanked line still has its newline, so compare content: a fenced line is
+  # all spaces in the view but not in the source.
+  nzchar(trimws(view_lines)) | !nzchar(trimws(raw_lines))
+}
+
+#' Alert markers that would reach the reader as literal text
+#' @noRd
+sd_unrenderable_alerts <- function(text) {
+  prose <- sd_md_prose_lines(text)
+  lines <- strsplit(text, "\n", fixed = TRUE)[[1L]]
+  found <- character()
+  for (i in seq_along(lines)) {
+    if (!prose[[i]]) {
+      next
+    }
+    m <- regmatches(lines[[i]], regexec("^[ \t]{0,3}>[ \t]*\\[!([A-Za-z]+)\\]", lines[[i]]))[[1L]]
+    if (length(m)) {
+      found <- c(found, m[[2L]])
+    }
+  }
+  unique(found)
+}
+
 #' Is this target a local relative path?
 #' @noRd
 sd_md_is_relative <- function(target) {
