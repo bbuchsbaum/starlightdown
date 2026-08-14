@@ -17,6 +17,7 @@ sd_validate_stage <- function(stage, routes, manifest, pkg, written_redirects = 
     sd_check_no_reference_h1(stage$content),
     sd_check_index_groups(stage$content),
     sd_check_relative_targets(stage$content),
+    sd_check_emittable_images(stage$content),
     sd_check_prose_links(stage$content, routes, manifest, pkg),
     sd_check_route_bijection(stage$content, routes),
     sd_check_redirect_collisions(routes, written_redirects)
@@ -180,6 +181,26 @@ sd_check_relative_targets <- function(content_dir) {
       if (!fs::file_exists(resolved) && !fs::dir_exists(resolved)) {
         problems <- c(problems, paste0(rel, ": relative target '", target, "' does not exist."))
       }
+    }
+  }
+  problems
+}
+
+# Existing on disk is not the same as reaching the built site. Astro routes
+# only Markdown images through its asset pipeline: a raw <img> naming a local
+# file is copied nowhere and 404s on a page that otherwise looks correct. The
+# builders convert those to Markdown, so anything still here is a hole in that
+# conversion, and a silent one -- hence a build failure rather than a warning.
+#' @noRd
+sd_check_emittable_images <- function(content_dir) {
+  problems <- character()
+  for (path in sd_stage_pages(content_dir)) {
+    rel <- as.character(fs::path_rel(path, content_dir))
+    for (src in sd_unemittable_images(sd_read_utf8(path))) {
+      problems <- c(problems, paste0(
+        rel, ": raw <img src='", src, "'> would not be emitted by Astro; ",
+        "it must be a Markdown image."
+      ))
     }
   }
   problems

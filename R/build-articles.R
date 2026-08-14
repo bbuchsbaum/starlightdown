@@ -160,6 +160,9 @@ sd_harvest_article <- function(vignette, pkg, build_dir, articles_dir) {
   # author wrote moves down one level rather than fighting for that slot.
   body <- paste0(sd_demote_headings(strsplit(body, "\n", fixed = TRUE)[[1L]]), collapse = "\n")
   body <- sd_normalise_quarto_fences(body)
+  # Quarto writes a raw <img> for any figure with an alignment or width; Astro
+  # would pass it through and never emit the file it names.
+  body <- sd_html_images_to_markdown(body)
   body <- sd_restore_root_links(body, depth = sd_path_depth(fs::path_dir(file_in)))
   body <- sd_apply_base_to_links(body, pkg$base)
 

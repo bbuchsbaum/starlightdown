@@ -198,6 +198,98 @@ sd_md_decode_target <- function(target) {
   if (is.na(decoded)) target else decoded
 }
 
+# Whole `<img ...>` tags, so one can be replaced rather than just its src.
+sd_md_html_img_tag_pattern <- "<img\\b[^>]*?/?>"
+
+#' Offsets of whole matches, for rewrites that replace more than a capture group
+#' @noRd
+sd_md_whole_matches <- function(view, pattern) {
+  found <- gregexpr(pattern, view, perl = TRUE)[[1L]]
+  if (found[[1L]] == -1L) {
+    return(NULL)
+  }
+  data.frame(
+    start = as.integer(found),
+    len = attr(found, "match.length"),
+    stringsAsFactors = FALSE
+  )
+}
+
+#' Rewrite raw `<img>` tags with a local source as Markdown images
+#'
+#' Quarto emits raw HTML for any chunk that sets `fig-align` or `out.width`.
+#' Astro only routes *Markdown* image syntax through its asset pipeline, so a
+#' raw tag is passed through verbatim and the file it names -- which lives
+#' under `src/content/` -- is never emitted to the build. The image then 404s
+#' on a page that otherwise looks fine. Converting to `![alt](src)` puts these
+#' figures through the same pipeline as every other image.
+#'
+#' Absolute, protocol-relative and root-absolute sources are left alone: those
+#' resolve without help, and a root-absolute one is already a `public/` asset.
+#'
+#' @noRd
+sd_html_images_to_markdown <- function(text) {
+  view <- sd_md_view(text)
+  tags <- sd_md_whole_matches(view, sd_md_html_img_tag_pattern)
+  if (is.null(tags)) {
+    return(text)
+  }
+
+  # Back to front, so earlier offsets stay valid as we splice.
+  ord <- order(tags$start, method = "radix", decreasing = TRUE)
+  for (i in ord) {
+    tag <- sd_md_slice(text, tags$start[[i]], tags$len[[i]])
+    src <- sd_html_attr(tag, "src")
+    if (!sd_is_string(src) || !sd_md_is_relative(src)) {
+      next
+    }
+    alt <- sd_html_attr(tag, "alt")
+    replacement <- paste0("![", if (sd_is_string(alt)) alt else "", "](", src, ")")
+    text <- paste0(
+      substr(text, 1L, tags$start[[i]] - 1L),
+      replacement,
+      substr(text, tags$start[[i]] + tags$len[[i]], nchar(text))
+    )
+  }
+  text
+}
+
+#' A single HTML attribute value, unquoted
+#' @noRd
+sd_html_attr <- function(tag, name) {
+  pattern <- paste0(
+    "\\b", name, "\\s*=\\s*(\"([^\"]*)\"|'([^']*)'|([^\\s>]+))"
+  )
+  m <- regmatches(tag, regexec(pattern, tag, perl = TRUE))[[1L]]
+  if (!length(m)) {
+    return(NA_character_)
+  }
+  value <- m[[3L]]
+  if (!nzchar(value)) value <- m[[4L]]
+  if (!nzchar(value)) value <- m[[5L]]
+  value
+}
+
+#' Raw `<img>` tags that still name a local file
+#'
+#' Anything left here after conversion would silently 404, so the validator
+#' treats it as a build failure rather than shipping a broken figure.
+#' @noRd
+sd_unemittable_images <- function(text) {
+  view <- sd_md_view(text)
+  tags <- sd_md_whole_matches(view, sd_md_html_img_tag_pattern)
+  if (is.null(tags)) {
+    return(character())
+  }
+  srcs <- vapply(
+    seq_len(nrow(tags)),
+    function(i) sd_html_attr(sd_md_slice(text, tags$start[[i]], tags$len[[i]]), "src"),
+    character(1)
+  )
+  srcs <- srcs[!is.na(srcs)]
+  unique(srcs[sd_md_is_relative(srcs)])
+}
+
 #' Is this target a local relative path?
 #' @noRd
 sd_md_is_relative <- function(target) {
