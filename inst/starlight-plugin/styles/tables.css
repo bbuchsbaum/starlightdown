@@ -53,6 +53,6 @@
 .sl-markdown-content :is(th, td) code {
 	background: transparent;
 	padding-inline: 0;
-	font-size: 0.875em;
+	font-size: 0.95em;
 	color: var(--sd-ink);
 }

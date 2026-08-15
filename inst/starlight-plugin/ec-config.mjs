@@ -33,9 +33,11 @@ export const ecConfig = {
 		codeBackground: 'var(--sd-code-bg, var(--sl-color-bg))',
 		codeFontFamily: 'var(--sd-font-mono, var(--__sl-font-mono))',
 		// Code sits next to 17px serif prose, and IBM Plex Mono runs small for
-		// its size. Starlight's default (13px) reads as a footnote beside the
-		// body text; 15px is the smallest that holds its own.
-		codeFontSize: '0.9375rem',
+		// its size: matching the body's nominal size still reads a touch
+		// smaller, which is the right amount. Starlight's 13px default reads as
+		// a footnote. Every other code surface -- usage blocks, inline spans,
+		// table cells -- is sized from this, so they stay in step.
+		codeFontSize: '1rem',
 		codeLineHeight: '1.6',
 		codePaddingBlock: '0.7rem',
 		codePaddingInline: '0.9rem',

@@ -98,7 +98,9 @@
 
 .sl-markdown-content code {
 	font-family: var(--sd-font-mono);
-	font-size: 0.86em;
+	/* Enough to sit inside a line of serif without disturbing its rhythm, and
+	   no more: 0.86 made function names harder to read than the prose. */
+	font-size: 0.95em;
 	border-radius: 2px;
 	background-color: var(--sl-color-bg-inline-code);
 }

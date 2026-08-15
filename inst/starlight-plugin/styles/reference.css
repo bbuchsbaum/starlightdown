@@ -161,7 +161,7 @@
 
 .sd-kind-reference .sl-markdown-content td:first-child {
 	font-family: var(--sd-font-mono);
-	font-size: 0.8125rem;
+	font-size: 0.9375rem;
 	color: var(--sd-ink);
 	white-space: nowrap;
 	padding-inline-end: 1.25rem;
@@ -266,7 +266,7 @@
 
 .sd-seealso-list :is(a, .sd-seealso-plain) {
 	font-family: var(--sd-font-mono);
-	font-size: 0.8125rem;
+	font-size: 0.9375rem;
 }
 
 .sd-seealso-plain {
@@ -321,7 +321,7 @@
 
 .sd-index-name {
 	font-family: var(--sd-font-mono);
-	font-size: 0.875rem;
+	font-size: 0.9375rem;
 	font-weight: 500;
 	margin: 0;
 }
