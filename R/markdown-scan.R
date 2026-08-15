@@ -112,8 +112,11 @@ sd_md_inline_pattern <- paste0(
 )
 
 # `[id]: /route/ "Title"` -- the definition is where a reference-style link's
-# target actually lives, so validating and rewriting it covers every use.
-sd_md_reference_pattern <- "(?m)^[ \t]{0,3}\\[[^\\]\n]+\\]:[ \t]*(?<target><[^>\n]*>|\\S+)"
+# target actually lives, so validating and rewriting it covers every use. A
+# label opening with `^` is a footnote definition, whose body is prose, not a
+# target: `[^1]: The footnote.` was being read as a link to a file named "The".
+sd_md_reference_pattern <-
+  "(?m)^[ \t]{0,3}\\[(?!\\^)[^\\]\n]+\\]:[ \t]*(?<target><[^>\n]*>|\\S+)"
 
 # Raw HTML, which Markdown passes straight through to the page.
 sd_md_html_href_pattern <-
@@ -347,7 +350,17 @@ sd_alerts_to_asides <- function(text) {
       # Unknown type: keep the words, drop the unreadable marker.
       out <- c(out, paste0("> ", body))
     } else {
-      out <- c(out, paste0(":::", aside), body, ":::")
+      # A titled Quarto callout arrives with its title as the body's leading
+      # heading. Starlight spells that `:::note[Title]`, and leaving it as a
+      # heading puts an outsized rule inside a small box.
+      title <- ""
+      heading <- regmatches(body[[1L]] %||% "", regexec("^#{1,6}[ \t]+(.+?)[ \t]*$", body[[1L]] %||% ""))[[1L]]
+      if (length(heading)) {
+        title <- paste0("[", heading[[2L]], "]")
+        body <- body[-1L]
+        while (length(body) && !nzchar(trimws(body[[1L]]))) body <- body[-1L]
+      }
+      out <- c(out, paste0(":::", aside, title), body, ":::")
     }
     i <- j
   }

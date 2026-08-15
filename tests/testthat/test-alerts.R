@@ -66,3 +66,21 @@ test_that("the validator refuses to ship an unrendered alert marker", {
   expect_length(problems, 1L)
   expect_match(problems, "literal text", fixed = TRUE)
 })
+
+test_that("a titled Quarto callout becomes a titled aside", {
+  # Quarto renders `::: {.callout-warning title="Mind this"}` with the title as
+  # the body's leading heading. Starlight spells it `:::caution[Mind this]`;
+  # left as a heading it draws an outsized rule inside a small box.
+  body <- "> [!WARNING]\n>\n> ### Mind this\n>\n> Body text.\n"
+  expect_identical(
+    sd_alerts_to_asides(body),
+    ":::caution[Mind this]\nBody text.\n:::\n"
+  )
+})
+
+test_that("an untitled alert gets no title brackets", {
+  expect_identical(
+    sd_alerts_to_asides("> [!NOTE]\n> Body.\n"),
+    ":::note\nBody.\n:::\n"
+  )
+})
