@@ -106,6 +106,11 @@ Current boundaries:
 
 - [Getting started](/starlightdown/articles/getting-started/) — the full workflow,
   configuration, and what is machine-owned versus yours to edit.
+- [Theming and authoring](/starlightdown/articles/authoring/) — changing colors, type and
+  code style, which Starlight features a vignette can actually reach through
+  Quarto, and how the same vignette renders on CRAN.
+- [Deploying to GitHub Pages](/starlightdown/articles/deploying/) — what has to be true
+  for the site to appear, and what to check when it does not.
 - [Frontend contract](https://github.com/bbuchsbaum/starlightdown/blob/HEAD/inst/starlight-plugin/CONTRACT.md) — the manifest,
   frontmatter and component data shapes, for anyone extending the frontend.
 - [Changelog](/starlightdown/news/)

@@ -1,0 +1,139 @@
+---
+title: "Deploying to GitHub Pages"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Deploying to GitHub Pages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+Five things have to be true before a site appears at
+`https://you.github.io/yourpkg/`. Four of them are one-time setup; the first
+is the one people miss, because the build succeeds without it.
+
+# 1. Declare where the site will live
+
+starlightdown has to know the site's address before it can build a correct
+site, because that address determines the path every asset and link is written
+against. Set it in `_pkgdown.yml`:
+
+```yaml
+url: https://you.github.io/yourpkg
+```
+
+or as the first entry of `URL:` in `DESCRIPTION`:
+
+```
+URL: https://you.github.io/yourpkg, https://github.com/you/yourpkg
+```
+
+The URL is split into an origin and a base path:
+
+| Declared URL | Origin | Base |
+| --- | --- | --- |
+| `https://you.github.io/yourpkg` | `https://you.github.io` | `/yourpkg` |
+| `https://docs.example.org` | `https://docs.example.org` | `/` |
+| `https://you.r-universe.dev/yourpkg` | `https://you.r-universe.dev` | `/yourpkg` |
+
+A project page is served from a subdirectory named after the repository, so
+the base has to match the repository name. A custom domain serves from the
+root, so its base is `/`.
+
+A code-forge URL is deliberately not accepted as a documentation address:
+`https://github.com/you/yourpkg` describes where the source lives, not where
+the docs are served, and treating it as the site would make the base
+`/you/yourpkg`. If nothing usable is declared, the build warns and produces a
+site with no canonical URLs or sitemap. It will still work when served from a
+root, and break subtly when served from a subdirectory.
+
+# 2. Add the workflow
+
+```{r}
+starlightdown::use_starlight_github_actions()
+```
+
+This writes `.github/workflows/starlight.yml`, which installs R and your
+package's dependencies, installs Quarto, installs the package itself, runs
+`build_site()`, then builds the Astro site and uploads it to Pages. Pass
+`site_dir` if your site is not in `starlight/`, and `branch` if you publish
+from something other than `main`.
+
+The order matters and is not accidental: `build_site()` runs before `npm ci`
+because it regenerates `starlight/.starlightdown/`, which contains the
+frontend plugin that `package-lock.json` points at.
+
+# 3. Commit the lockfile
+
+`starlight/package-lock.json` must be in the repository. The workflow uses
+`npm ci`, which refuses to run without it, and pinning the lockfile is what
+makes a CI build reproduce your local one. The scaffold creates it for you;
+just do not add it to `.gitignore`.
+
+Commit `starlight/` — its config, `src/content/docs/`, and `public/` — but not
+`starlight/node_modules/` or `starlight/dist/`. The scaffold writes a
+`.gitignore` that already draws this line. The machine-owned
+`starlight/.starlightdown/` directory can be committed or ignored; the workflow
+regenerates it either way.
+
+# 4. Enable Pages, with Actions as the source
+
+In the repository, under **Settings → Pages**, set **Source** to
+**GitHub Actions**. Not "Deploy from a branch" — the workflow publishes an
+artifact directly, and there is no `gh-pages` branch involved.
+
+Or from the command line:
+
+```sh
+gh api -X POST repos/OWNER/REPO/pages -f build_type=workflow
+```
+
+Pages must be enabled before a deployment can succeed.
+
+# 5. Make the repository public, or pay for it
+
+GitHub Pages serves private repositories only on paid plans. On a free
+account the workflow runs to completion and publishes nothing.
+
+# What a deployment looks like
+
+Push to your publishing branch. The workflow builds and deploys, and the site
+appears at the URL you declared in step 1. Subsequent pushes redeploy.
+
+Old pkgdown URLs keep working: `/reference/foo.html` is published as a small
+redirect page pointing at `/reference/foo/`. These are static files, which is
+why the approach works on Pages at all — a `_redirects` file, which some hosts
+understand, is inert here.
+
+# When it does not work
+
+**The site loads but every stylesheet and link 404s.** The base path does not
+match the repository name. Check `url:`, and remember that renaming the
+repository changes the base.
+
+**The deploy job fails with a permissions error.** Pages is not enabled, or is
+still set to deploy from a branch.
+
+**`npm ci` fails.** `package-lock.json` is missing, or it disagrees with
+`package.json` — most often after switching themes, which adds a dependency.
+Run `npm install` in the site directory and commit the updated lockfile. The
+vendored plugin is recorded as a path link rather than a version, so upgrading
+starlightdown itself does not put the two out of step.
+
+**Vignettes fail to build in CI but work locally.** The workflow installs
+Quarto, but a vignette can still depend on a package that is only in your local
+library. Anything a vignette needs must be in `Suggests`.
+
+**The build succeeds and the site is stale.** Astro caches rendered content.
+The workflow builds from a fresh checkout so this affects local iteration only;
+`npm run build -- --force` clears it.
+
+# Other hosts
+
+Nothing here is specific to GitHub Pages except the workflow and the Pages
+settings. The build produces a static directory, so any static host serves it.
+Set `url:` to wherever it will be served, so that the base path is right, and
+publish `starlight/dist/`.

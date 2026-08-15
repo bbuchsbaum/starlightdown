@@ -161,9 +161,21 @@ Body of the aside.
 ```
 ````
 
-Attributes written directly on a fence — ```` ```r title="x" ```` — are worse
-than ignored: Pandoc does not recognise them, and the block stops being a code
+Writing the attributes directly on an ordinary fence is worse than ignored:
+Pandoc does not recognise that spelling, and the block stops being a code
 block at all.
+
+::: {.callout-warning title="Raw blocks are invisible on CRAN"}
+A `{=markdown}` block is emitted only by the Markdown writer. When CRAN builds
+your vignette to HTML, the block and everything in it is **dropped silently** —
+a reader there sees the heading and then nothing.
+
+So use raw blocks only for material the site alone needs, and keep anything a
+CRAN reader must see in ordinary Markdown. If you want a page that uses these
+features freely, write it as a site page rather than a vignette: any `.md` or
+`.mdx` file you add under `starlight/src/content/docs/` is published as-is and
+never goes to CRAN.
+:::
 
 ## Figures
 
@@ -227,3 +239,30 @@ are generated as Markdown. Generating MDX from R would mean escaping every
 that broke this package's previous implementation. Tabs and cards are
 available to hand-written pages you add to `src/content/docs/` yourself as
 `.mdx`; they are not available to generated ones.
+
+# The same vignette on CRAN
+
+Your vignettes have two audiences. CRAN builds them with knitr and rmarkdown
+into plain HTML; starlightdown builds them with Quarto into the site. The
+source has to satisfy both, and they do not agree about everything:
+
+| Written in a vignette | On the site | On CRAN |
+| --- | --- | --- |
+| Ordinary Markdown, math, footnotes, tables | Rendered | Rendered |
+| Executed chunks, output, plots | Rendered, as fused cells | Rendered |
+| Quarto callout | A styled aside | An unstyled block; text is visible |
+| `{=markdown}` raw block | Rendered | **Dropped entirely** |
+
+Only the last row loses anything. A callout degrades — CRAN's vignette
+stylesheet knows nothing about callouts, so it reads as an ordinary paragraph —
+but the words survive, which is what matters.
+
+Two habits keep both audiences whole:
+
+- Write for CRAN first, and treat site-only syntax as an enhancement.
+- Put anything that genuinely needs site-only features on a site page instead
+  of in a vignette.
+
+Nothing else about a vignette changes. It stays an ordinary `.Rmd` or `.qmd`
+with a `VignetteIndexEntry`, built by knitr for the tarball exactly as before.
+starlightdown reads `vignettes/`; it never rewrites it.

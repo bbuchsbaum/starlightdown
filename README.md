@@ -98,8 +98,10 @@ Current boundaries:
 - [Getting started](vignettes/getting-started.Rmd) — the full workflow,
   configuration, and what is machine-owned versus yours to edit.
 - [Theming and authoring](vignettes/authoring.Rmd) — changing colors, type and
-  code style, plus a verified account of which Starlight features a vignette
-  can actually reach through Quarto.
+  code style, which Starlight features a vignette can actually reach through
+  Quarto, and how the same vignette renders on CRAN.
+- [Deploying to GitHub Pages](vignettes/deploying.Rmd) — what has to be true
+  for the site to appear, and what to check when it does not.
 - [Frontend contract](inst/starlight-plugin/CONTRACT.md) — the manifest,
   frontmatter and component data shapes, for anyone extending the frontend.
 - [Changelog](NEWS.md)

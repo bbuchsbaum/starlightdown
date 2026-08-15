@@ -45,9 +45,24 @@ sd_md_mask <- function(text) {
     }
   }
 
-  # Inline code spans and HTML comments, which may straddle lines.
-  for (pattern in c("(`+)[\\s\\S]*?\\1", "(?s)<!--.*?-->")) {
-    found <- gregexpr(pattern, text, perl = TRUE)[[1L]]
+  # Inline code spans and HTML comments, which may straddle lines. These are
+  # scanned with fenced blocks already blanked out: a document that *shows*
+  # fenced blocks -- this package's own authoring guide, for one -- contains
+  # backtick runs inside fences that would otherwise pair with backticks in
+  # the prose after them and blank everything in between.
+  scan_text <- text
+  if (any(!mask)) {
+    chars <- strsplit(text, "", fixed = TRUE)[[1L]]
+    chars[!mask & chars != "\n"] <- " "
+    scan_text <- paste0(chars, collapse = "")
+  }
+
+  # A code span is matched within one line. CommonMark permits one to straddle
+  # lines, but that is rare, while a lone backtick in prose is not -- and the
+  # cost of the greedy reading is silently blanking every line until the next
+  # backtick, which suppresses conversions and validation alike.
+  for (pattern in c("(`+)[^\n]*?\\1", "(?s)<!--.*?-->")) {
+    found <- gregexpr(pattern, scan_text, perl = TRUE)[[1L]]
     if (found[[1L]] == -1L) {
       next
     }

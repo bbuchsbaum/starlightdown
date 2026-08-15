@@ -84,3 +84,32 @@ test_that("an untitled alert gets no title brackets", {
     ":::note\nBody.\n:::\n"
   )
 })
+
+test_that("backticks inside fenced blocks do not blank the prose after them", {
+  # A document that *shows* fenced blocks -- this package's own authoring
+  # guide -- has backtick runs inside fences. Scanned naively they pair with
+  # backticks in later prose and blank everything between, so conversions and
+  # validation silently stop happening partway down the page.
+  body <- paste0(
+    "Example:\n\n",
+    "`````markdown\n",
+    "````{=markdown}\n",
+    "```r title=\"x.R\"\n",
+    "y <- 1\n",
+    "```\n",
+    "````\n",
+    "`````\n\n",
+    "> [!WARNING]\n",
+    "> Body after the fences.\n"
+  )
+  converted <- sd_alerts_to_asides(body)
+  expect_match(converted, ":::caution", fixed = TRUE)
+  expect_match(converted, "Body after the fences.", fixed = TRUE)
+  # The shown fence must survive untouched.
+  expect_match(converted, "```r title=\"x.R\"", fixed = TRUE)
+})
+
+test_that("a lone backtick in prose does not blank the rest of the document", {
+  body <- "A stray ` backtick.\n\n> [!NOTE]\n> Still converted.\n"
+  expect_match(sd_alerts_to_asides(body), ":::note", fixed = TRUE)
+})
