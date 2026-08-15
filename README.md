@@ -1,21 +1,68 @@
 # starlightdown
 
-A documentation compiler for R packages targeting [Astro Starlight](https://starlight.astro.build/).
+starlightdown is a documentation-site generator for R packages that compiles your
+`man/`, `vignettes/`, `README.md` and `NEWS.md` into an
+[Astro Starlight](https://starlight.astro.build/) site. Use it as an alternative
+to pkgdown when you want a faster, better-looking site without rewriting any
+configuration: `_pkgdown.yml` stays canonical and is never modified.
 
-- **pkgdown-compatible**: `_pkgdown.yml` stays your canonical configuration — reference sections, article groupings, and redirects carry over.
-- **Quarto-powered**: vignettes and articles are executed by Quarto to Markdown with figures, citations, and math intact.
-- **Rd, rendered properly**: reference topics are compiled from Rd with executed examples, captured plots, and cross-package autolinking.
-- **A genuinely first-class frontend**: a bundled Starlight plugin with an editorial, scientific default theme — typography-driven, restrained color, fused code/output cells.
+> **Status:** 0.1.0, source-only. The pipeline is tested end to end, but the API
+> may still change.
 
-> **Status**: under active reconstruction. The compiler pipeline described above is being rebuilt; APIs will change.
-
-## Usage
+## Quick start
 
 ```r
-starlightdown::use_starlight_site()   # scaffold (once)
-starlightdown::build_site()           # compile docs
-starlightdown::preview_site()         # dev server (requires Node.js)
+# install.packages("pak")
+pak::pak("bbuchsbaum/starlightdown")
+
+starlightdown::use_starlight_site()   # scaffold starlight/, once
+starlightdown::build_site()           # compile the docs
+starlightdown::preview_site()         # serve at localhost:4321
 ```
+
+`use_starlight_site()` writes an Astro project into `starlight/` with the
+frontend plugin vendored in and dependency versions pinned, then runs
+`npm install`. `build_site()` compiles the package into it: every `man/*.Rd`
+topic becomes a page with its examples executed and plots captured, every
+vignette is executed by Quarto, and your README, NEWS and CITATION become the
+home, changelog and citation pages.
+
+## Requirements
+
+- **R** ≥ 4.1, and the package you are documenting **installed** — examples and
+  vignettes are executed against the installed namespace, exactly as
+  `example()` and `R CMD check` do.
+- **Node.js** ≥ 22.12, for the Astro build.
+- **Quarto**, only if the package has vignettes. `build_site(articles = FALSE)`
+  and reference-only packages need no Quarto at all.
+
+## What you get
+
+- **Reference pages** compiled from Rd: executed examples with captured plots,
+  argument tables, alias and lifecycle badges, and links resolved across
+  packages via downlit.
+- **Articles** executed by Quarto, with figures, math and citations intact and
+  a freeze cache so unchanged vignettes are not re-run.
+- **Navigation from `_pkgdown.yml`** — `reference:` sections (including
+  `starts_with()` and the other selectors) group the function index and order
+  the sidebar; `articles:` orders the article sidebar.
+- **Working old URLs**: every `/reference/foo.html` gets a redirect page, as
+  static HTML, so it works on GitHub Pages.
+- **Search, dark mode and a deploy workflow** — search is built in via
+  Pagefind, and `use_starlight_github_actions()` writes a GitHub Pages workflow.
+
+## How a build behaves
+
+The content tree is written to a staging directory, validated, and only then
+swapped into place. Two consequences, both deliberate:
+
+- A build that fails validation leaves the published site untouched, so you
+  never ship a half-written tree.
+- A page whose source you deleted cannot survive as a stale file, because the
+  directory is replaced rather than written over.
+
+Builds are deterministic: building twice without changes produces
+byte-identical output, so a generated site is reviewable in a diff.
 
 ## Migrating from pkgdown
 
@@ -23,4 +70,37 @@ starlightdown::preview_site()         # dev server (requires Node.js)
 starlightdown::migrate_from_pkgdown()
 ```
 
-Old pkgdown `.html` URLs are preserved via generated redirect pages that work on GitHub Pages.
+There is nothing to convert. This scaffolds the site if needed and reports what
+your `_pkgdown.yml` means for the new site — what carries over, and what has no
+equivalent, such as navbar dropdowns, pkgdown themes and HTML includes. Your
+configuration is not rewritten, so both generators can run side by side.
+
+## Fit and boundaries
+
+A good fit for a package that already has a `_pkgdown.yml`, or none at all, and
+wants a modern documentation site with executed examples and vignettes.
+
+Current boundaries:
+
+- Two themes: the bundled editorial default, and `nova` via
+  [starlight-theme-nova](https://github.com/ocavue/starlight-theme-nova). The
+  Ion theme cannot be offered yet — it requires Astro 6, and this stack is on
+  Astro 7.
+- pkgdown's multi-version `development` modes are not implemented; each build
+  writes one site.
+- Custom pkgdown templates, navbar components and HTML includes have no
+  automatic equivalent. Astro integrations and
+  `starlight/src/styles/custom.css` are where those go.
+- Not on CRAN.
+
+## Documentation
+
+- [Getting started](vignettes/getting-started.Rmd) — the full workflow,
+  configuration, and what is machine-owned versus yours to edit.
+- [Frontend contract](inst/starlight-plugin/CONTRACT.md) — the manifest,
+  frontmatter and component data shapes, for anyone extending the frontend.
+- [Changelog](NEWS.md)
+
+## License
+
+MIT © Bradley R. Buchsbaum

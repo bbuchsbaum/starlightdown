@@ -22,7 +22,7 @@ presentation.
 - **R**, obviously, and the package you are documenting **installed**. Examples
   and vignettes are executed against the installed namespace, exactly as
   `example()` and `R CMD check` do.
-- **Node.js** (18 or newer), for the Astro build.
+- **Node.js** 22.12 or newer, which is what Astro 7 requires.
 - **Quarto**, but only if your package has vignettes. A reference-only site
   builds with no Quarto at all.
 
