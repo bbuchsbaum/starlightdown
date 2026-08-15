@@ -8,12 +8,12 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "postinstall": "astro sync"
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.36.2",
-    "astro": "^5.15.4",
-    "sharp": "^0.34.5"
+    "@astrojs/starlight": "0.41.7",
+    "astro": "7.2.1",
+    "sharp": "0.35.3",
+    "starlightdown-starlight": "file:./.starlightdown/plugin"
   }
 }

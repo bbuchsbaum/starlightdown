@@ -425,13 +425,21 @@ sd_root_link_targets <- function(text) {
 #'
 #' @param fn Given a target, returns its replacement (or the target unchanged).
 #' @noRd
-sd_md_rewrite_targets <- function(text, fn, images = FALSE) {
+#' @param which Which targets to rewrite: prose `"links"`, `"images"`, or
+#'   `"all"`. An image and a link that name the same file usually need
+#'   different treatment -- one is copied, the other is routed -- so a caller
+#'   almost always wants one or the other.
+#' @noRd
+sd_md_rewrite_targets <- function(text, fn, which = c("links", "images", "all")) {
+  which <- match.arg(which)
   targets <- sd_md_targets(text)
   if (!nrow(targets)) {
     return(text)
   }
-  if (!images) {
+  if (which == "links") {
     targets <- targets[!targets$image, , drop = FALSE]
+  } else if (which == "images") {
+    targets <- targets[targets$image, , drop = FALSE]
   }
   if (!nrow(targets)) {
     return(text)

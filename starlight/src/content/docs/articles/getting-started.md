@@ -1,164 +1,127 @@
 ---
-title: 'Getting started with starlightdown'
+title: Getting started with starlightdown
+sd:
+  kind: article
 ---
 
-`starlightdown` helps you turn an R package’s documentation into an
-Astro Starlight site using `{altdoc}` for Markdown conversion and
-`{pkgdown}` for navigation structure.
+starlightdown compiles an R package’s documentation into an
+[Astro Starlight](https://starlight.astro.build/) site. It is a documentation
+*compiler*: it reads your package the way pkgdown does, renders it to Markdown,
+and hands a typed manifest to a bundled Starlight plugin that does the
+presentation.
 
-## Basic workflow
+### What you need
 
-1.  Scaffold the Starlight site (once):
+- **R**, obviously, and the package you are documenting **installed**. Examples
+  and vignettes are executed against the installed namespace, exactly as
+  `example()` and `R CMD check` do.
+- **Node.js** 22.12 or newer, which is what Astro 7 requires.
+- **Quarto**, but only if your package has vignettes. A reference-only site
+  builds with no Quarto at all.
 
-``` r
-starlightdown::use_starlight_site()
+### Two commands
+
+```r
+starlightdown::use_starlight_site() # once
+starlightdown::build_site()         # whenever the docs change
 ```
 
-1.  Render and sync docs whenever they change:
+`use_starlight_site()` creates `starlight/`: an Astro project with the plugin
+vendored into `starlight/.starlightdown/plugin/`, pinned dependency versions,
+and `npm install` run for you if npm is on the path.
 
-``` r
-starlightdown::build_site(use_pkgdown_nav = TRUE)
+`build_site()` does the compiling. Then:
+
+``` sh
+cd starlight
+npm run dev    # preview at localhost:4321
+npm run build  # production build into starlight/dist
 ```
 
-1.  Preview the site:
+### What gets built
 
-``` r
-system("cd starlight && npm run dev")
+| Source | Becomes |
+|----|----|
+| `man/*.Rd` | `/reference/<topic>/`, with executed examples and figures |
+| `_pkgdown.yml` `reference:` | the grouped function index at `/reference/` |
+| `vignettes/*.Rmd`, `*.qmd` | `/articles/<name>/`, executed by Quarto |
+| `README.md` | the home page |
+| `NEWS.md` | `/news/` |
+| `inst/CITATION` | the citation block on the home page |
+
+Old pkgdown URLs keep working: every `/reference/foo.html` gets a redirect page
+pointing at `/reference/foo/`.
+
+### `_pkgdown.yml` stays canonical
+
+If you already have a pkgdown site, there is nothing to convert. starlightdown
+reads the same file:
+
+- `url:` sets the site origin and the base path.
+- `reference:` sections, including `starts_with()` and friends, group the
+  function index and order the sidebar.
+- `articles:` sections order the article sidebar.
+- `redirects:` entries become redirect pages.
+
+`migrate_from_pkgdown()` does not rewrite anything. It scaffolds the site if
+needed and prints what carries over and what has no equivalent — custom navbar
+components, pkgdown themes, HTML includes:
+
+```r
+starlightdown::migrate_from_pkgdown()
 ```
 
-## What happens under the hood
+You can keep both generators running side by side.
 
--   `{altdoc}` renders README, man pages, and vignettes to `docs/`.
--   Files are mapped into `starlight/src/content/docs/` (README -\>
-    `index.md`, vignettes -\> `articles/`, man pages -\> `reference/`).
--   Starlight frontmatter is injected and a sidebar can be generated
-    from `{pkgdown}` metadata.
+### Options worth knowing
 
-## Choosing a theme
-
-`use_starlight_site()` and `build_site()` accept a `theme` argument:
-
-``` r
-starlightdown::use_starlight_site(theme = "ion")      # or "bauhaus" (default)
-starlightdown::build_site(theme = "ion")
+```r
+starlightdown::build_site(
+  articles = FALSE,     # skip vignettes (and the Quarto requirement)
+  examples = FALSE,     # show example code without running it
+  run_dont_run = TRUE,  # execute \dontrun{} blocks too
+  lazy = FALSE,         # ignore Quarto's freeze cache and re-execute
+  theme = "nova"        # "default" (bundled) or "nova"
+)
 ```
 
-## Using Starlight UI features
+starlightdown-specific settings live under a `starlightdown:` key in
+`_pkgdown.yml`, so there is still only one configuration file:
 
-Starlight supports several UI components. Since altdoc renders to
-Markdown (which Quarto/Pandoc processes), starlightdown uses HTML
-comment markers that survive rendering and get converted to proper
-syntax during `build_site()`.
+``` yaml
+url: https://you.github.io/yourpkg
 
-**Output formats:**
-
--   **`.md` (default)**: Supports Starlight callouts (`:::note`,
-    `:::tip`, etc.). This is the default because most documentation only
-    needs callouts.
--   **`.mdx` (opt-in)**: Enables JSX components like Tabs and Cards. Use
-    `build_site(use_mdx = TRUE)` to enable.
-
-### Callouts (Asides) — Works in `.md` (default)
-
-Starlight provides callout boxes for notes, tips, cautions, and dangers:
-
-:::note
-
-This is a note callout rendered by Starlight.
-:::
-:::tip
-
-Tips render with the accent color and icon.
-:::
-:::caution
-
-Cautions get a warning treatment.
-:::
-:::danger
-
-Danger callouts highlight critical warnings.
-:::
-**Syntax in vignettes:**
-
-``` markdown
-
-:::note
-
-Your note text here.
-:::
+starlightdown:
+  theme: default
+  quickstart: |
+    library(yourpkg)
+    do_the_thing()
 ```
 
-### Tabs — Requires `.mdx` (opt-in)
+### How a build behaves
 
-Use tabs to show alternative content (e.g., R vs Python examples).
-**Note:** Requires `build_site(use_mdx = TRUE)`.
+The whole content tree is written to a staging directory, validated, and only
+then swapped into place. Two things follow from that, and both are deliberate:
 
-<!--mdx:Tabs-->
-<!--mdx:TabItem label="R"-->
+- A build that fails validation leaves the published site untouched. You never
+  ship a half-written tree.
+- A page whose source you deleted cannot survive as a stale file, because the
+  directory is replaced rather than written over.
 
-``` r
-summary(lm(y ~ x, data = df))
-```
+The validation gates are the ones that catch real breakage: every page’s
+frontmatter parses and has a title, every relative image exists next to the
+page that names it, every site-absolute link matches a route or a redirect, and
+routes and files are the same set.
 
-<!--mdx:/TabItem-->
-<!--mdx:TabItem label="Python"-->
+Builds are deterministic. Building twice without changing anything produces
+byte-identical output, which makes the generated site reviewable in a diff.
 
-``` python
-import statsmodels.api as sm
-model = sm.OLS(y, X).fit()
-print(model.summary())
-```
+### Editing the result
 
-<!--mdx:/TabItem-->
-<!--mdx:/Tabs-->
+Everything under `starlight/.starlightdown/` is machine-owned and rewritten on
+every build. Everything else is yours:
 
-**Syntax in vignettes:**
-
-``` markdown
-<!--mdx:Tabs-->
-<!--mdx:TabItem label="R"-->
-Your R content here.
-<!--mdx:/TabItem-->
-<!--mdx:TabItem label="Python"-->
-Your Python content here.
-<!--mdx:/TabItem-->
-<!--mdx:/Tabs-->
-```
-
-### Cards and LinkCards — Requires `.mdx` (opt-in)
-
-Display content in card layouts. **Note:** Requires
-`build_site(use_mdx = TRUE)`.
-
-<!--mdx:CardGrid-->
-<!--mdx:Card title="Getting Started"-->
-
-Learn the basics of starlightdown. <!--mdx:/Card-->
-<!--mdx:Card title="Themes"--> Customize your site’s appearance.
-<!--mdx:/Card--> <!--mdx:/CardGrid-->
-
-<!--mdx:LinkCard title="Starlight Docs" href="https://starlight.astro.build/"/-->
-
-**Syntax:**
-
-``` markdown
-<!--mdx:CardGrid-->
-<!--mdx:Card title="Title"-->
-Card content here.
-<!--mdx:/Card-->
-<!--mdx:/CardGrid-->
-
-<!--mdx:LinkCard title="Link Title" href="https://example.com"/-->
-```
-
-### Right sidebar (On this page)
-
-Starlight auto-builds a Table of Contents from your headings. Keep a
-clear heading hierarchy (`#`, `##`, `###`) and it will populate the
-right sidebar.
-
-### Pagination
-
-Starlight provides “Previous / Next” links at the bottom automatically
-based on your sidebar order. Use `_pkgdown.yml` to control
-reference/article order and `use_pkgdown_nav = TRUE` to mirror that.
+- `starlight/astro.config.mjs` — add Astro integrations here.
+- `starlight/src/styles/custom.css` — loaded after the theme, so your rules win.
+- `starlight/package.json` — starlightdown edits dependencies through
+  `jsonlite`, never by rewriting text.

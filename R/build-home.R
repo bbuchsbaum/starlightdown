@@ -47,6 +47,7 @@ sd_build_home <- function(pkg, stage_dir) {
     body <- moved$body
     assets <- moved$assets
 
+    body <- sd_resolve_readme_links(body, pkg)
     body <- sd_apply_base_to_links(body, pkg$base)
   }
 
@@ -228,6 +229,59 @@ sd_extract_badges <- function(body) {
 # Any relative target that resolves inside the package is copied next to
 # index.md and the reference repointed at the copy.
 #' @noRd
+# A README is written for the repository, so its links point at files there:
+# NEWS.md, a vignette source, CONTRIBUTING.md. On the site those paths mean
+# nothing. The ones the build itself publishes become links to the page; the
+# rest become links into the repository, where the file actually is. Leaving
+# them relative would only fail validation, which helps nobody.
+#' @noRd
+sd_resolve_readme_links <- function(body, pkg) {
+  blob <- sd_repo_blob_url(pkg)
+
+  sd_md_rewrite_targets(body, which = "links", fn = function(target) {
+    decoded <- sd_md_decode_target(target)
+    if (!sd_md_is_relative(decoded) || !nzchar(decoded)) {
+      return(target)
+    }
+    anchor <- regmatches(target, regexpr("[#?].*$", target))
+    anchor <- if (length(anchor)) anchor else ""
+
+    route <- sd_readme_route(decoded, pkg)
+    if (!is.na(route)) {
+      return(paste0(route, anchor))
+    }
+    if (!is.na(blob) && fs::file_exists(fs::path(pkg$src_path, decoded))) {
+      return(paste0(blob, decoded, anchor))
+    }
+    target
+  })
+}
+
+# Which page, if any, does a repository path end up as?
+#' @noRd
+sd_readme_route <- function(path, pkg) {
+  path <- sub("^\\./", "", path)
+  if (identical(tolower(path), "news.md")) {
+    return("/news/")
+  }
+  vignette <- regmatches(path, regexec("^vignettes/(.+)\\.(Rmd|rmd|qmd|md)$", path))[[1L]]
+  if (length(vignette)) {
+    return(sd_article_route(vignette[[2L]]))
+  }
+  NA_character_
+}
+
+# `https://github.com/o/r` -> `https://github.com/o/r/blob/HEAD/`
+#' @noRd
+sd_repo_blob_url <- function(pkg) {
+  urls <- sd_package_urls(pkg)
+  repo <- urls$repo
+  if (!sd_is_string(repo)) {
+    return(NA_character_)
+  }
+  paste0(sub("/$", "", repo), "/blob/HEAD/")
+}
+
 sd_relocate_local_images <- function(body, pkg, stage_dir) {
   dest_dir <- fs::path(stage_dir, "figures")
   assets <- character()
@@ -235,7 +289,7 @@ sd_relocate_local_images <- function(body, pkg, stage_dir) {
 
   body <- sd_md_rewrite_targets(
     body,
-    images = TRUE,
+    which = "images",
     fn = function(target) {
       decoded <- sd_md_decode_target(target)
       if (!sd_md_is_relative(decoded) || !nzchar(decoded)) {

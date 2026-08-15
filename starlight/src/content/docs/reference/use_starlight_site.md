@@ -1,61 +1,35 @@
 ---
-title: 'Scaffold an Astro Starlight project for this package'
+title: use_starlight_site
+description: Scaffold an Astro Starlight project for this package
+sd:
+  kind: reference
+  name: use_starlight_site
+  aliases:
+  - use_starlight_site
+  usage: |-
+    use_starlight_site(
+      path = ".",
+      site_dir = "starlight",
+      overwrite = FALSE,
+      npm_install = TRUE
+    )
+  source: man/use_starlight_site.Rd
 ---
 
-## Description
-
-This creates a <code style="white-space: pre;">starlight/</code>
-directory containing a minimal Astro + Starlight project which will
-serve your package docs.
-
-## Usage
-
-<pre><code class='language-R'>use_starlight_site(
-  path = ".",
-  site_dir = "starlight",
-  overwrite = FALSE,
-  theme = c("bauhaus", "ion")
-)
-</code></pre>
+Creates `site_dir/` from the bundled template, vendors the Starlight plugin
+into `site_dir/.starlightdown/`, and installs the Node dependencies if npm
+is available. Everything outside `.starlightdown/` is yours to edit; that
+directory is regenerated on every [`build_site()`](/starlightdown/reference/build_site/).
 
 ## Arguments
 
-<table role="presentation">
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="path">path</code>
-</td>
-<td>
-Package root directory.
-</td>
-</tr>
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="site_dir">site_dir</code>
-</td>
-<td>
-Subdirectory where the Starlight project will live.
-</td>
-</tr>
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="overwrite">overwrite</code>
-</td>
-<td>
-Whether to overwrite an existing directory at <code>site_dir</code>.
-</td>
-</tr>
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="theme">theme</code>
-</td>
-<td>
-Starlight theme to apply (<code>“bauhaus”</code> default, or
-<code>“ion”</code>).
-</td>
-</tr>
-</table>
+| Argument | Description |
+| :--- | :--- |
+| `path` | Package root directory. |
+| `site_dir` | Subdirectory where the Starlight project will live. |
+| `overwrite` | Whether to overwrite an existing directory at `site_dir`. |
+| `npm_install` | Run `npm install` to create the lockfile? |
 
 ## Value
 
-Invisibly, the path to <code>site_dir</code>.
+Invisibly, the path to `site_dir`.

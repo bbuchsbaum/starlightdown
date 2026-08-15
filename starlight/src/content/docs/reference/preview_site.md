@@ -1,48 +1,26 @@
 ---
-title: 'Run npm run dev for the Starlight site'
+title: preview_site
+description: Preview the Starlight site with a development server
+sd:
+  kind: reference
+  name: preview_site
+  aliases:
+  - preview_site
+  usage: preview_site(path = ".", site_dir = "starlight", npm_args = c("run", "dev"))
+  source: man/preview_site.Rd
 ---
 
-## Description
-
-Convenience wrapper around <code style="white-space: pre;">npm run
-dev</code> in the Starlight project. You must have run
-<code style="white-space: pre;">npm install</code> in
-<code>site_dir</code> first.
-
-## Usage
-
-<pre><code class='language-R'>preview_site(path = ".", site_dir = "starlight", npm_args = c("run", "dev"))
-</code></pre>
+Runs `npm run dev` in the Starlight project directory. The server runs in
+the foreground until interrupted. You must have run `npm install` in
+`site_dir` first (or `use_starlight_site()` followed by `npm install`).
 
 ## Arguments
 
-<table role="presentation">
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="path">path</code>
-</td>
-<td>
-Package root directory.
-</td>
-</tr>
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="site_dir">site_dir</code>
-</td>
-<td>
-Starlight project directory, relative to <code>path</code>.
-</td>
-</tr>
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="npm_args">npm_args</code>
-</td>
-<td>
-Character vector of arguments passed to <code>npm</code>. Defaults to
-<code>c(“run”, “dev”)</code>.
-</td>
-</tr>
-</table>
+| Argument | Description |
+| :--- | :--- |
+| `path` | Package root directory. |
+| `site_dir` | Starlight project directory, relative to `path`. |
+| `npm_args` | Character vector of arguments passed to `npm`.<br>Defaults to `c("run", "dev")`. |
 
 ## Value
 

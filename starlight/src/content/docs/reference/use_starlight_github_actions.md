@@ -1,52 +1,43 @@
 ---
-title: 'Set up a GitHub Actions workflow for Starlight docs'
+title: use_starlight_github_actions
+description: Set up a GitHub Actions workflow for Starlight docs
+sd:
+  kind: reference
+  name: use_starlight_github_actions
+  aliases:
+  - use_starlight_github_actions
+  usage: |-
+    use_starlight_github_actions(
+      path = ".",
+      branch = "main",
+      site_dir = "starlight",
+      overwrite = FALSE
+    )
+  source: man/use_starlight_github_actions.Rd
 ---
 
-## Description
-
-Copies a minimal workflow that builds the Starlight site with
-<code>build_site()</code> and deploys
-<code style="white-space: pre;">starlight/dist/</code> to GitHub Pages.
-
-## Usage
-
-<pre><code class='language-R'>use_starlight_github_actions(
-  branch = "main",
-  dist_dir = "starlight/dist",
-  overwrite = FALSE
-)
-</code></pre>
+Writes a workflow that installs the package, builds the site with
+[`build_site()`](/starlightdown/reference/build_site/), and deploys it to GitHub Pages. The workflow installs
+Quarto (needed only if the package has vignettes) and uses `npm ci`, so
+`<site_dir>/package-lock.json` must be committed — the scaffold ships one.
 
 ## Arguments
 
-<table role="presentation">
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="branch">branch</code>
-</td>
-<td>
-Git branch to publish from (default: <code>“main”</code>).
-</td>
-</tr>
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="dist_dir">dist_dir</code>
-</td>
-<td>
-Path to the built Starlight output (default:
-<code>“starlight/dist”</code>).
-</td>
-</tr>
-<tr>
-<td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="overwrite">overwrite</code>
-</td>
-<td>
-Whether to overwrite an existing workflow file.
-</td>
-</tr>
-</table>
+| Argument | Description |
+| :--- | :--- |
+| `path` | Package root directory. |
+| `branch` | Git branch to publish from. |
+| `site_dir` | Starlight project directory, relative to `path`. The built<br>output is taken from `<site_dir>/dist`. |
+| `overwrite` | Whether to overwrite an existing workflow file. |
 
 ## Value
 
 Invisibly, the path to the workflow file.
+
+## Examples
+
+```r
+# Not run:
+use_starlight_github_actions()
+# End(Not run)
+```

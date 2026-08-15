@@ -1,5 +1,1 @@
-export default [
-  { slug: '' },
-  { label: 'Articles', autogenerate: { directory: 'articles' } },
-  { label: 'Reference', autogenerate: { directory: 'reference' } },
-];
+// Unused. Retained only because this session cannot delete files; see the Phase 7 report.
